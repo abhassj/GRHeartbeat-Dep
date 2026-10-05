@@ -1,63 +1,242 @@
-@import '@fontsource-variable/inter';
-@import '@fontsource-variable/plus-jakarta-sans';
-@import '@fontsource-variable/plus-jakarta-sans/wght-italic.css';
+@import '@fontsource-variable/inter/wght.css';
+@import '@fontsource-variable/inter/wght-italic.css';
+@import '@fontsource-variable/montserrat/wght.css';
+@import '@fontsource-variable/montserrat/wght-italic.css';
+@import 'lenis/dist/lenis.css';
 @import 'tailwindcss';
 
 /*
- * Brand tokens. Each becomes a CSS variable (e.g. --color-red) and a Tailwind
- * utility (e.g. bg-red, text-navy, border-chrome, font-heading, shadow-card).
+ * Design tokens. Colours follow docs/GR Heartbeat — Colour Theme.md exactly.
+ * Tailwind's default palette is removed, so only these colours generate utilities
+ * (bg-pulse-red, text-navy, border-line, bg-grey-50, ...).
  */
-@theme {
-  --color-red: #e31b23;
-  --color-crimson: #9b111e;
-  --color-navy: #1b2a6b;
-  --color-ink: #111827;
-  --color-muted: #6b7280;
-  --color-surface: #f5f7fa;
+@theme static {
+  --color-*: initial;
+
+  /* Base keywords (kept after clearing the default palette) */
   --color-white: #ffffff;
-  --color-chrome: #c0c4cc;
+  --color-black: #000000;
+  --color-transparent: transparent;
+  --color-current: currentColor;
 
-  --font-heading: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  /* Brand */
+  --color-pulse-red: #dc1820;
+  --color-crimson: #a4141c;
+  --color-deep-crimson: #800c14;
+  --color-navy: #142458;
+  --color-slate: #474e5a;
+  --color-monitor: #15181d;
+  --color-chrome: #8c8c8c;
 
-  --radius-card: 1rem;
-  --radius-button: 0.75rem;
+  /* Text + surfaces */
+  --color-ink: #1a1a1a;
+  --color-body: #4d4d4d;
+  --color-surface: #fafafa;
+  --color-line: #efeff0;
+  --color-red-tint: #fdedee;
 
-  --shadow-card: 0 1px 2px rgb(17 24 39 / 0.04), 0 4px 16px rgb(27 42 107 / 0.08);
-  --shadow-card-hover: 0 2px 4px rgb(17 24 39 / 0.06), 0 12px 32px rgb(27 42 107 / 0.14);
-  --shadow-glow-red: 0 0 0 6px rgb(227 27 35 / 0.18);
+  /* Grey ramp */
+  --color-grey-50: #f4f5f7;
+  --color-grey-100: #ebecef;
+  --color-grey-200: #d9dce1;
+  --color-grey-300: #bfc4cc;
+  --color-grey-400: #8a919c;
+  --color-grey-500: #747b87;
+  --color-grey-600: #5a616d;
+  --color-grey-700: #474e5a;
+  --color-grey-800: #333944;
+  --color-grey-900: #22262e;
+  --color-grey-950: #15181d;
 
-  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Red ramp */
+  --color-red-50: #fdedee;
+  --color-red-100: #fad4d6;
+  --color-red-200: #f4a8ac;
+  --color-red-300: #ee6a6f;
+  --color-red-400: #ff5a61;
+  --color-red-500: #dc1820;
+  --color-red-600: #be141b;
+  --color-red-700: #a4141c;
+  --color-red-800: #800c14;
+
+  /* Status */
+  --color-success: #0b7a4b;
+  --color-amber: #8a5300;
+  --color-amber-50: #fff4e0;
+  --color-whatsapp: #25d366;
+
+  /* Signature effects */
+  --gradient-chrome: linear-gradient(
+    135deg,
+    #2b2b2f 0%,
+    #8c8c8c 30%,
+    #e6e6e8 50%,
+    #8c8c8c 70%,
+    #2b2b2f 100%
+  );
+  --gradient-red: linear-gradient(135deg, #dc1820 0%, #a4141c 100%);
+  --shadow-card: 0 1px 2px rgb(26 26 26 / 0.04), 0 4px 16px rgb(26 26 26 / 0.06);
+  --shadow-card-hover: 0 8px 28px rgb(26 26 26 / 0.1);
+  --radius-card: 16px;
+  --radius-panel: 24px;
+
+  /* Typography */
+  --font-display: 'Montserrat Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-body);
+
+  --text-display: clamp(2.5rem, 1.75rem + 3vw, 4.5rem);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.03em;
+  --text-h1: clamp(2.25rem, 1.65rem + 2.2vw, 3.5rem);
+  --text-h1--line-height: 1.08;
+  --text-h1--letter-spacing: -0.025em;
+  --text-h2: clamp(1.875rem, 1.4rem + 1.6vw, 2.75rem);
+  --text-h2--line-height: 1.12;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h3: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  --text-h3--line-height: 1.25;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h4: 1.125rem;
+  --text-h4--line-height: 1.35;
+  --text-lead: clamp(1.125rem, 1.02rem + 0.4vw, 1.3125rem);
+  --text-lead--line-height: 1.6;
+  --text-base: clamp(1.0625rem, 1.02rem + 0.15vw, 1.125rem);
+  --text-base--line-height: 1.65;
+  --text-eyebrow: 0.8125rem;
+  --text-eyebrow--line-height: 1.2;
+  --text-eyebrow--letter-spacing: 0.12em;
+
+  /* Layout */
+  --container-content: 77.5rem;
+
+  /* Motion (mirrors src/lib/motion.js for CSS transitions) */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/*
+ * Lub-dub glow on primary CTAs: two beats, then rest.
+ * Same timing as the colour doc's box-shadow keyframes, but drawn on a ::after ring
+ * that animates transform + opacity only, so it stays on the compositor.
+ */
+@keyframes lub-dub {
+  0% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  12% {
+    transform: scale(1.1, 1.4);
+    opacity: 0;
+  }
+  12.01%,
+  18% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  28% {
+    transform: scale(1.1, 1.4);
+    opacity: 0;
+  }
+  28.01%,
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@utility btn-pulse {
+  position: relative;
+  isolation: isolate;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--pulse-glow, var(--color-pulse-red));
+    opacity: 0;
+    pointer-events: none;
+    animation: lub-dub 5s ease-out infinite;
+  }
+}
+
+/* Chrome text for stat numbers */
+@utility text-chrome {
+  background: var(--gradient-chrome);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  @media (forced-colors: active) {
+    background: none;
+    color: CanvasText;
+  }
+}
+
+/* Monitor panel grid */
+@utility bg-monitor-grid {
+  background-color: var(--color-monitor);
+  background-image:
+    linear-gradient(rgb(220 24 32 / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(220 24 32 / 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Chrome hairline (1px rules, icon rings) */
+@utility bg-chrome {
+  background-image: var(--gradient-chrome);
 }
 
 @layer base {
   html {
-    @apply bg-white font-sans text-ink antialiased;
-    scroll-behavior: smooth;
+    @apply bg-white font-body text-base text-body antialiased;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
   }
 
   h1,
   h2,
   h3,
   h4 {
-    @apply font-heading font-extrabold tracking-tight text-navy;
+    @apply font-display font-extrabold text-ink;
+  }
+
+  ::selection {
+    @apply bg-red-100 text-ink;
   }
 
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-red;
+    outline: 2px solid var(--color-pulse-red);
+    outline-offset: 2px;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
+  /* On dark and red sections the focus ring gets a white offset so it stays visible */
+  [data-tone='dark'] :focus-visible {
+    box-shadow: 0 0 0 2px var(--color-white);
+  }
+}
 
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
+/*
+ * Reduced motion. MotionProvider stamps data-motion on <html> from the OS setting
+ * (or the /styleguide override); the media query covers the moment before it runs.
+ */
+:root[data-motion='reduce'] *,
+:root[data-motion='reduce'] *::before,
+:root[data-motion='reduce'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+:root[data-motion='reduce'] .btn-pulse::after {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion]) .btn-pulse::after {
+    animation: none;
   }
 }

@@ -16,6 +16,8 @@ export const router = createBrowserRouter([
       { path: 'courses/:region/:slug', lazy: page(() => import('@/pages/CourseDetail')) },
       { path: 'about', lazy: page(() => import('@/pages/About')) },
       { path: 'contact', lazy: page(() => import('@/pages/Contact')) },
+      // Internal component catalogue: unlinked and noindex. Remove before launch (Phase 8).
+      { path: 'styleguide', lazy: page(() => import('@/pages/Styleguide')) },
       { path: '*', Component: NotFound },
     ],
   },

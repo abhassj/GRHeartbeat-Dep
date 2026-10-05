@@ -1,13 +1,17 @@
+import Container from '@/components/ui/Container'
+import Eyebrow from '@/components/ui/Eyebrow'
+import Heading from '@/components/ui/Heading'
+
 // Stand-in body for pages that are not built yet.
 export default function PagePlaceholder({ title, description }) {
   return (
-    <section className="mx-auto max-w-6xl px-4 py-20">
+    <Container as="section" className="py-20">
       <title>{`${title} | GR Heartbeat`}</title>
-      <p className="text-sm font-semibold tracking-widest text-red uppercase">
-        Coming in a later phase
-      </p>
-      <h1 className="mt-2 text-4xl sm:text-5xl">{title}</h1>
-      {description && <p className="mt-4 max-w-2xl text-lg text-muted">{description}</p>}
-    </section>
+      <Eyebrow marker>Coming in a later phase</Eyebrow>
+      <Heading level={1} className="mt-3">
+        {title}
+      </Heading>
+      {description && <p className="mt-4 max-w-2xl text-lead">{description}</p>}
+    </Container>
   )
 }
