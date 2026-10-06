@@ -5,6 +5,9 @@ import MotionProvider from '@/components/providers/MotionProvider'
 import { router } from '@/routes'
 import '@/styles/index.css'
 
+// Development only: lets browser tests perform in-app navigations. Stripped from builds.
+if (import.meta.env.DEV) window.__router = router
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <MotionProvider>

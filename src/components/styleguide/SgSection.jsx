@@ -8,7 +8,7 @@ export default function SgSection({ id, index, title, flush = false, children })
   return (
     <section
       id={id}
-      className={cx('scroll-mt-8 border-t border-line pt-16 sm:pt-20', !flush && 'pb-16 sm:pb-20')}
+      className={cx('border-t border-line pt-16 sm:pt-20', !flush && 'pb-16 sm:pb-20')}
     >
       <Container>
         <Eyebrow>{String(index).padStart(2, '0')}</Eyebrow>

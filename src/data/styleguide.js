@@ -14,6 +14,23 @@ export const styleguide = {
     body: 'Body copy is Inter at 17–18px with generous 1.65 leading. It should read comfortably on a phone held at arm’s length, and never run wider than about 70 characters.',
     cardTitle: 'Card title',
     cardText: 'Supporting text for a card. Cards lift by 4px on hover.',
+    marqueeItems: [
+      'Sample logo A',
+      'Sample logo B',
+      'Sample logo C',
+      'Sample logo D',
+      'Sample logo E',
+      'Sample logo F',
+      'Sample logo G',
+    ],
+    shellNotes: [
+      'Navbar: floating pill; frosted and shrunk once scrolled; hides on scroll down past the hero.',
+      'Courses dropdown: hover (120ms intent), click or Enter/Space/↓; arrows move, Esc closes.',
+      'Mobile drawer (< 1024px): focus trapped, page scroll locked, Esc closes.',
+      'Final CTA band with an ECG edge overlapping the footer; footer PulseLine draws on view.',
+      'WhatsApp button after 400px of scroll; hidden while the CTA band or footer is on screen.',
+      'Route changes: fade out/in with one ECG sweep; focus moves to the new page heading.',
+    ],
     stats: [
       { value: 1240, suffix: '+', label: 'Sample metric' },
       { value: 98, suffix: '%', label: 'Another metric' },

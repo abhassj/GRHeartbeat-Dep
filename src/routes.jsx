@@ -15,7 +15,13 @@ export const router = createBrowserRouter([
       { path: 'courses/:region', lazy: page(() => import('@/pages/CoursesRegion')) },
       { path: 'courses/:region/:slug', lazy: page(() => import('@/pages/CourseDetail')) },
       { path: 'about', lazy: page(() => import('@/pages/About')) },
-      { path: 'contact', lazy: page(() => import('@/pages/Contact')) },
+      // The contact page is itself the contact options, so it skips the final CTA band.
+      {
+        path: 'contact',
+        handle: { finalCta: false },
+        lazy: page(() => import('@/pages/Contact')),
+      },
+      { path: 'privacy', lazy: page(() => import('@/pages/Privacy')) },
       // Internal component catalogue: unlinked and noindex. Remove before launch (Phase 8).
       { path: 'styleguide', lazy: page(() => import('@/pages/Styleguide')) },
       { path: '*', Component: NotFound },

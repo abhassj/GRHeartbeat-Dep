@@ -14,7 +14,7 @@ export default function MotionToggle() {
   const { override, setOverride, system, reduced } = useMotionPreference()
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-40 -translate-x-1/2 rounded-full border border-line bg-white/90 p-1.5 shadow-card-hover backdrop-blur-md">
+    <div className="fixed bottom-4 left-4 z-40 rounded-full border border-line bg-white/90 p-1.5 shadow-card-hover backdrop-blur-md sm:left-1/2 sm:-translate-x-1/2">
       <fieldset className="flex items-center gap-1">
         <legend className="sr-only">Motion preview</legend>
         <span className="hidden px-3 text-xs font-semibold text-grey-600 sm:inline">

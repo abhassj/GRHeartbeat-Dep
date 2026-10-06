@@ -189,7 +189,43 @@
   background-image: var(--gradient-chrome);
 }
 
+/* Marquee: a duplicated track slides by half its width, so the loop is seamless */
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@utility animate-marquee {
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+}
+
 @layer base {
+  /*
+   * Floating navbar geometry. --banner-h is set while the dev sample-content banner shows.
+   * --nav-offset is the space the navbar occupies: pages pad by it and hash targets
+   * scroll to it (scroll-margin-top), for same-page and cross-page links alike.
+   */
+  :root {
+    --banner-h: 0px;
+    --nav-inset: 16px;
+    --nav-h: 72px;
+    --nav-offset: calc(var(--banner-h) + var(--nav-inset) + var(--nav-h) + 16px);
+  }
+
+  [id] {
+    scroll-margin-top: var(--nav-offset);
+  }
+
+  /* Focus moved here after a route change: announced by screen readers, no visible ring */
+  [data-route-focus]:focus,
+  main:focus {
+    outline: none;
+  }
+
   html {
     @apply bg-white font-body text-base text-body antialiased;
     font-synthesis: none;

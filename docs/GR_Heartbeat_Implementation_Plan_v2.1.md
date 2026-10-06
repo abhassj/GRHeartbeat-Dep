@@ -1,6 +1,8 @@
 # GR Heartbeat — Implementation Plan v2 (Phases 1–8)
 
-Oct 6, 2026 · Supersedes the "Implementation plan" section of *GR Heartbeat — Website PRD & Implementation Plan*. Phase 0 (setup & foundations) is **done**.
+Oct 6, 2026 · v2.1 · Supersedes the "Implementation plan" section of *GR Heartbeat — Website PRD & Implementation Plan*. Phase 0 (setup & foundations) and Phase 1 (design system) are **done**.
+
+> **v2.1 change:** courses are **not** seeded from the old website. The client is sending a new course list, which gets imported in the separate **Course import** step (after Phase 6). Until then the site runs on clearly-marked sample fixtures in development and shows "coming soon" states in production. Every section that depends on courses must handle an empty list.
 
 ## How to use this document
 
@@ -22,6 +24,7 @@ This is the build spec for Claude Code. It travels with three other inputs:
 5. Ask before adding any dependency not listed in this file.
 6. Commit at the end of each phase: `feat(phase-N): <summary>`.
 7. **No Vercel deployment until Phase 8.** Verify locally with `npm run build && npm run preview`.
+8. **No course content from the old website.** Don't copy course titles, descriptions or slugs from heartbeattraining.net. Course data comes only from the client's new list (see Course import). Components must never reference a specific course slug; they reach courses through the helpers in `src/lib/courses.js`.
 
 ---
 
@@ -78,7 +81,7 @@ All motion presets live in `src/lib/motion.js` so timing is consistent.
 | `<PulseLine>` | SVG ECG path: draws in with `pathLength` 0 → 1, then a bright "blip" travels along it every ~1 s (resting heart rate) | Hero seam, section dividers, footer top |
 | `<EcgDivider>` | Thin full-width `PulseLine` that draws once when scrolled into view | Between major sections (max 3 on the home page) |
 | `<EcgEdge>` | SVG mask making a band's bottom (or a video's left) edge an ECG trace | Hero video seam, final CTA band |
-| `<HeartbeatButton>` | Primary CTA with the `lub-dub` glow (two beats, 4 s rest); magnetic hover (button shifts ≤ 6 px towards the cursor) | Hero + final CTA only |
+| `<HeartbeatButton>` | Primary CTA with the `lub-dub` glow (two beats on a 5 s cycle); magnetic hover (button shifts ≤ 6 px towards the cursor) | Hero + final CTA only |
 | `<CountUp>` | Animates 0 → value over 1.6 s when in view; uses `Intl.NumberFormat` | Stats |
 | `<ChromeText>` | Chrome-gradient text with a slow sheen sweep on reveal | Stat numbers |
 | `<Marquee>` | CSS-transform infinite loop, pause on hover/focus, duplicated track | Clients, trust strip on mobile |
@@ -112,13 +115,13 @@ All motion presets live in `src/lib/motion.js` so timing is consistent.
 
 **Goal:** every building block exists and is visible on a `/styleguide` route before any page is built.
 
-- [ ] Replace Phase 0 tokens with the Colour Theme doc's `@theme` block (colours, ramps, gradients, shadows, radii) + the `lub-dub`, `.text-chrome`, `.bg-monitor-grid` utilities
-- [ ] Fontsource: Montserrat 700/800/800-italic, Inter 400/500/600. Set `--font-display` and `--font-body` in `@theme`
-- [ ] `src/lib/motion.js` (presets above) + `src/hooks/useReducedMotionSafe.js`
-- [ ] Lenis provider in the root layout (off for reduced motion and touch)
-- [ ] UI primitives: `Button` (primary / secondary / ghost / white-on-red; sizes sm, md, lg; renders `<a>` or `<Link>` or `<button>`), `Container`, `Section` (tone: white, surface, monitor, red, slate), `Eyebrow`, `Heading` (h1–h4 with display option), `Card`, `Badge` (red-tint, amber, navy, success), `IconRing` (chrome ring)
-- [ ] Animation components: everything in the catalogue except `<Marquee>` and the page transition (those come in Phase 2)
-- [ ] `/styleguide` route (dev only, not linked) showing every component in every variant, with a reduced-motion toggle to preview the fallbacks
+- [x] Replace Phase 0 tokens with the Colour Theme doc's `@theme` block (colours, ramps, gradients, shadows, radii) + the `lub-dub`, `.text-chrome`, `.bg-monitor-grid` utilities
+- [x] Fontsource: Montserrat 700/800/800-italic, Inter 400/500/600. Set `--font-display` and `--font-body` in `@theme`
+- [x] `src/lib/motion.js` (presets above) + `src/hooks/useReducedMotionSafe.js`
+- [x] Lenis provider in the root layout (off for reduced motion and touch)
+- [x] UI primitives: `Button` (primary / secondary / ghost / white-on-red; sizes sm, md, lg; renders `<a>` or `<Link>` or `<button>`), `Container`, `Section` (tone: white, surface, monitor, red, slate), `Eyebrow`, `Heading` (h1–h4 with display option), `Card`, `Badge` (red-tint, amber, navy, success), `IconRing` (chrome ring)
+- [x] Animation components: everything in the catalogue except `<Marquee>` and the page transition (those come in Phase 2)
+- [x] `/styleguide` route (dev only, not linked) showing every component in every variant, with a reduced-motion toggle to preview the fallbacks
 
 **Done when:** `/styleguide` shows every component, `npm run build` passes, lint passes, and toggling reduced motion leaves everything visible and static.
 
@@ -130,7 +133,7 @@ All motion presets live in `src/lib/motion.js` so timing is consistent.
 - [ ] Left: logo (links home). Centre: Home, Courses ▾, About Us. Right: a WhatsApp icon button + "Get in touch" primary pill.
 - [ ] Active link: the underline is a tiny ECG blip SVG that draws in (also on hover). Animate between links with `layoutId`.
 - [ ] **Courses dropdown** = a small mega panel (opens on hover with a 120 ms intent delay, on click, and with Enter/Space/Arrow keys; closes on Esc/blur). It holds two `TiltCard` region cards:
-  - South Africa: "Live" badge, course count from data, 3 popular course links, "View all →".
+  - South Africa: "Live" badge, course count from data, up to 3 featured course links from `getFeaturedCourses('sa')`, "View all →". When there are no courses, it shows the 3 categories instead and no count.
   - United Kingdom: amber "Coming soon" badge, one line, "Register interest →".
   - The panel scales from 0.96 + fades; region cards stagger in.
 - [ ] Mobile (< 1024 px): hamburger morphs into an X; full-screen drawer slides from the right with staggered links; SA/UK as two big cards; Call + WhatsApp buttons pinned to the bottom. Lock body scroll while open; trap focus.
@@ -153,18 +156,33 @@ All motion presets live in `src/lib/motion.js` so timing is consistent.
 
 ## Phase 3 — Content & data layer
 
-- [ ] `src/data/site.js`: brand name, phones (+27 74 461 3719, +27 84 011 6596), email `TODO(client)`, location (Durban, South Africa), WhatsApp number, accreditations (MerSETA 17-QA/ACC/2367/21; Department of Labour C.I.NR 286/3/12/1; SAIOSH corporate member), founded year **2013**, stats (`courses: 20`, `peopleTrained: 7000`, `years` **computed from 2013** — never hard-coded), social links `TODO(client)`.
+- [ ] `src/data/site.js`: brand name, phones (+27 74 461 3719, +27 84 011 6596), email `TODO(client)`, location (Durban, South Africa), WhatsApp number, accreditations (MerSETA 17-QA/ACC/2367/21; Department of Labour C.I.NR 286/3/12/1; SAIOSH corporate member), founded year **2013**, stats (`courses: 20` marked `TODO(client): confirm against the new course list`, `peopleTrained: 7000`, `years` **computed from 2013** — never hard-coded), social links `TODO(client)`. The `courses` stat is a client-supplied figure, not the length of the course array (the client may offer more courses than are listed online).
 - [ ] `src/data/regions.js`: `{ sa: { name: 'South Africa', status: 'live' }, uk: { name: 'United Kingdom', status: 'coming-soon' } }`
-- [ ] `src/data/categories.js`: `first-aid` (First Aid & Emergency Care), `compliance` (Health & Safety Compliance), `emergency-response` (Emergency Response & Fire). Each has a title, short line, icon name, image and colour accent.
-- [ ] `src/data/courses.sa.js`: seed all 18 unique titles from the current site (First Aid Level 1/2/3, Basic Fire Fighting Techniques, SHE Representative, Safety Officer, Legal Liability, Risk Assessment, HIRA, Incident Investigation, Working at Heights, Fall Protection Plan, Working in Confined Spaces, Earth Moving Equipment, TLB, Hyster, 16.1 & 16.2 Legal Liability CEO & Appointee, Operate Construction Equipment). Use the PRD data model. Every unknown field is `TODO(client)`, and featured is `true` on First Aid L1, Fire Fighting, SHE Rep, Working at Heights, Safety Officer and HIRA. The final list of 11 is pending the client.
-- [ ] `src/data/courses.uk.js`: empty array
-- [ ] `src/data/home.js`: hero copy (motto `"Ready when it matters."` + alternates `"Train today. Save a life tomorrow."` and `"Skills that keep hearts beating."`), subline, mission, vision, What-we-do pillars, process steps, group specials (`TODO(client)`), CPR monitor copy.
-- [ ] `src/data/videos.js`: the 3 learning videos (`first-aid`, `ohs`, `fire`), each with title, key fact, duration, YouTube ID (`null`), poster, and a related course slug.
-- [ ] `src/data/clients.js`: name + logo per client.
-- [ ] Helpers in `src/lib/courses.js`: `getCoursesByRegion`, `getCourseBySlug`, `getFeaturedCourses`, `getRelatedCourses`, `getCategories`.
-- [ ] Download, rename and convert the current site's photos (see Assets).
+- [ ] `src/data/categories.js`: `first-aid` (First Aid & Emergency Care), `compliance` (Health & Safety Compliance), `emergency-response` (Emergency Response & Fire). Each has a title, short line, icon name, image and colour accent. Mark the file `TODO(client): confirm categories once the new course list arrives`. The new list may add or rename categories, so nothing outside this file may hard-code a category id.
 
-**Done when:** `grep -r "TODO(client)" src/data` lists every open content item, and no component contains business copy.
+**Courses: schema and fixtures only (no real course content yet)**
+- [ ] `src/data/courses.schema.js`: the course data model from the PRD, written as a JSDoc `@typedef` plus a small `validateCourse()` function. It checks required fields (`slug`, `region`, `title`, `category`, `summary`), that `category` exists in `categories.js`, and that slugs are unique. Add two optional fields: `price` (string, or `null` for "enquire for pricing") and `deliveryMode`. In development, log validation errors to the console; never throw in production.
+- [ ] `src/data/courses.sa.js` and `src/data/courses.uk.js`: both `export default []`, each with a header comment: `TODO(client): new course list pending — import via the Course import step`.
+- [ ] `src/data/fixtures/courses.sample.js`: 6 obviously generic sample courses, 2 per category, for building and testing the UI. Rules:
+  - Titles follow the pattern "Sample course — First aid (1-day)". Don't use real course names, old-site names or invented accreditation numbers.
+  - Each sample has `sample: true` and fills every field, so every layout state (long titles, missing NQF level, price vs no price, many outcomes) is exercised. Use lorem-style copy that is clearly not real.
+  - Mark 4 of them as `featured: true`.
+- [ ] `src/lib/courses.js`: helpers `getCoursesByRegion`, `getCourseBySlug`, `getFeaturedCourses`, `getRelatedCourses`, `getCoursesByCategory`, `getCategories` and `hasCourses(region)`. Data source rule:
+  - If the region's real data file is non-empty, use only real data.
+  - Otherwise, use the sample fixtures **only** when `import.meta.env.DEV` is true or `VITE_SAMPLE_CONTENT=true`. Production builds never include samples, so the fixtures file must be dynamically imported or tree-shaken out. Verify this by grepping `dist/` for "Sample course".
+  - Otherwise return `[]`.
+- [ ] `src/components/dev/SampleContentBanner.jsx`: a thin amber bar at the top of the page, "Showing sample courses — real course list pending". It shows whenever sample fixtures are in use.
+- [ ] **Empty states are a requirement, not an afterthought.** Every consumer of course data (navbar dropdown, featured grid, sticky-scroll chips, course list page, contact form course select, footer) must render a sensible state when `hasCourses('sa')` is false. Each one is specified in its section below.
+- [ ] `src/data/home.js`: hero copy (motto `"Ready when it matters."` + alternates `"Train today. Save a life tomorrow."` and `"Skills that keep hearts beating."`), subline, mission, vision, What-we-do pillars, process steps, group specials (`TODO(client)`), CPR monitor copy.
+- [ ] `src/data/videos.js`: the 3 learning videos (`first-aid`, `ohs`, `fire`), each with title, key fact, duration, YouTube ID (`null`), poster, and a `relatedCategory` (a category id, not a course slug).
+- [ ] `src/data/clients.js`: name + logo per client.
+- [ ] Download, rename and convert the current site's photos (see Assets). Photos only; no course text.
+
+**Done when:**
+- `grep -r "TODO(client)" src/data` lists every open content item, and no component contains business copy.
+- `courses.sa.js` is empty and the dev server shows the sample courses with the amber banner.
+- `npm run build` contains no "Sample course" text in `dist/`.
+- `validateCourse()` passes on every fixture.
 
 ## Phase 4 — Home page (the showpiece)
 
@@ -212,7 +230,7 @@ Build the sections in this order. Section tones alternate as shown so the page h
 ### 4.4 What we do — sticky scroll ★
 - Desktop: a 2-column layout spanning about 300 vh.
   - **Left column:** `position: sticky; top: 96px`, an image frame 70 vh tall.
-  - **Right column:** three pillar blocks (each about 100 vh): First Aid & Emergency Care, Health & Safety Compliance, Emergency Response & Fire. Each block has an eyebrow number (01/02/03), heading, 2-line copy, 3 course chips (links), and "See courses →" (→ `/courses/sa?category=…`).
+  - **Right column:** three pillar blocks (each about 100 vh): First Aid & Emergency Care, Health & Safety Compliance, Emergency Response & Fire. Each block has an eyebrow number (01/02/03), heading, 2-line copy, up to 3 course chips from `getCoursesByCategory()` (the chip row is hidden when the category has no courses), and "See courses →" (→ `/courses/sa?category=…`). Pillars come from `categories.js`, so the section adapts if the categories change.
 - As each block becomes active (`useScroll` progress, or `useInView` with `amount: 0.5`):
   - The sticky image crossfades and scales to that pillar's photo (`AnimatePresence`, 0.6 s).
   - A vertical progress rail on the image's left fills, with an **ECG blip that travels down the rail** to point at the active block.
@@ -222,7 +240,8 @@ Build the sections in this order. Section tones alternate as shown so the page h
 
 ### 4.5 Find your course
 - Heading plus a **segmented SA/UK toggle**: a pill with a sliding red indicator (`layoutId`).
-- SA: a grid of 6 featured `CourseCard`s (`TiltCard` + `RevealStagger`). Cards have a category badge, title, duration and NQF meta in navy, and an arrow that slides on hover. Then a "View all {n} South African courses →" button.
+- SA: a grid of up to 6 featured `CourseCard`s from `getFeaturedCourses('sa')` (`TiltCard` + `RevealStagger`). Cards have a category badge, title, duration and NQF meta in navy, and an arrow that slides on hover. Then a "View all {n} South African courses →" button.
+- SA with no courses: show the 3 category cards instead (same card style), each linking to the course list, plus a line "Our full course list is being updated — call or WhatsApp us for current courses" with both buttons.
 - UK: the grid animates out, and a coming-soon card animates in (`AnimatePresence`). It has an animated globe/ECG illustration, "We're bringing GR Heartbeat to the UK", and a "Register interest" button (mailto, with a subject line, for now).
 
 ### 4.6 Why it matters — CPR monitor + learning videos ★
@@ -246,7 +265,7 @@ Dark `bg-monitor-grid` section, with a 24 px radius panel inset from the page ed
 - Heading: "Why it matters".
 - Layout: one large player (16:9, left, 2/3 width) + three stacked **chapter cards** (right): First Aid at Work & Home, OHS Standards, Fire Safety.
 - Clicking a chapter card loads it into the player (crossfade). The active card gets a Pulse Red left bar and a progress ring.
-- Each card shows a title, one key fact, the duration, and "Related course →" (links to the course in `videos.js`).
+- Each card shows a title, one key fact, the duration, and "Related courses →" (links to `/courses/sa?category={relatedCategory}`).
 - The player is a **click-to-load facade**: poster + red play button. The `youtube-nocookie.com` iframe loads only after the click. When `youtubeId` is `null`, it shows the poster and a "Video coming soon" chip.
 - Mobile: the player sits on top, with chapters in a horizontal scroll-snap row below.
 
@@ -270,7 +289,9 @@ Dark `bg-monitor-grid` section, with a 24 px radius panel inset from the page ed
   - A compact page hero (eyebrow + title + count + a small `PulseLine`).
   - Sticky filter bar: category chips with a sliding red indicator and a search input. Filters sync to the URL (`?category=&q=`).
   - Course grid with `LayoutGroup` so cards animate positions when filtering (`layout` prop + `AnimatePresence` for enter/exit).
-  - An empty state.
+  - Two empty states:
+    - **No results** for a filter or search: a short message and "Clear filters".
+    - **No courses at all** (real list not imported yet): "Our course list is being updated" with the 3 categories, plus call, WhatsApp and contact buttons. The filter bar is hidden in this state.
 - [ ] `/courses/sa/:slug`:
   - Breadcrumbs; title; category badge; summary.
   - A **sticky key-facts sidebar** on desktop: duration, delivery mode, NQF level, certificate validity, accreditation. It also holds the enquiry CTAs: WhatsApp pre-filled with the course name, email, and "Book a group".
@@ -281,7 +302,7 @@ Dark `bg-monitor-grid` section, with a 24 px radius panel inset from the page ed
 - [ ] `/courses/uk`: a coming-soon hero with an animated `PulseLine` that "flatlines → beats" on load; "We're bringing GR Heartbeat to the UK"; a status chip "In progress"; a register-interest form (Web3Forms; email + optional name) with a success state. It uses the same layout component as SA, so launch = data + a status flip.
 - [ ] 404 page: an ECG that flatlines and then recovers into a beat, "This page has flatlined", and buttons home and to courses.
 
-**Done when:** every course is reachable from the grid, filtering animates smoothly, deep links work on refresh in `npm run preview`, and enquiry links contain the course name.
+**Done when:** using the sample fixtures in dev, every course is reachable from the grid, filtering animates smoothly, deep links work on refresh in `npm run preview`, and enquiry links contain the course name. The production build (no samples) shows the "being updated" state cleanly, and `/courses/sa/anything` shows the 404 page.
 
 ## Phase 6 — About Us & Contact
 
@@ -292,10 +313,47 @@ Dark `bg-monitor-grid` section, with a 24 px radius panel inset from the page ed
   - Mission / Vision / Values cards; team grid (`TODO(client)` photos, hover reveals role); accreditations in full with numbers + the company profile PDF download; clients marquee; final CTA.
 - [ ] `/contact`:
   - Two columns. Left: contact cards (Call, WhatsApp, Email, Location), each with an icon in an `IconRing` and a hover lift.
-  - Right: the Web3Forms form (name, phone, email, region select, course select populated from data and pre-filled from `?course=`, message). It has inline validation, a honeypot, a loading state, and success/error states. On success, the button morphs into a check with a single heartbeat pulse.
+  - Right: the Web3Forms form (name, phone, email, region select, course select populated from data with a "Not sure yet" option, pre-filled from `?course=`, and message). When there are no courses, the course select becomes a category select. It has inline validation, a honeypot, a loading state, and success/error states. On success, the button morphs into a check with a single heartbeat pulse.
   - An optional embedded map (lazy, click to load).
 
 **Done when:** a test submission reaches the configured inbox and both pages pass the responsive and reduced-motion checks.
+
+## Course import — when the client's new list arrives
+
+This is a standalone step. It can run any time after Phase 3 (ideally after Phase 6, before Phase 7), and it is not blocked by or blocking any other phase. If the list arrives early, pause the current phase at a clean commit, do the import, then resume.
+
+**Intake format to send the client** (one row per course; a spreadsheet is fine):
+
+| Field | Required | Notes |
+| --- | --- | --- |
+| Course title | Yes | As it should appear on the site |
+| Region | Yes | SA or UK |
+| Category | Yes | One of the categories, or propose a new one |
+| Short summary | Yes | 1–2 sentences |
+| Duration | Yes | e.g. "1 day", "3 days" |
+| Delivery mode | Yes | On-site at client / at our venue / both |
+| NQF level | If accredited | |
+| Unit standard numbers | If accredited | |
+| Accrediting body | If accredited | e.g. MerSETA, HWSETA |
+| Certificate validity | If applicable | e.g. "3 years" |
+| Who it's for | Yes | 2–4 bullet points |
+| What you'll learn | Yes | 3–6 bullet points |
+| Entry requirements | If any | |
+| What to bring | If any | |
+| Assessment | Yes | How learners are assessed |
+| Price | Optional | Leave blank for "Enquire for pricing" |
+| Featured on home page | Optional | Yes/no; up to 6 |
+
+**Steps**
+- [ ] Convert the client's list into `courses.sa.js` (and `courses.uk.js` if any UK courses). Generate slugs from titles (lowercase, hyphens); slugs must be unique and stable once published.
+- [ ] Update `categories.js` if the list introduces new categories (add an image and icon for each new one).
+- [ ] Run `validateCourse()` on every entry and fix all errors. Anything the client left blank becomes `TODO(client)`, never invented text.
+- [ ] Update the `courses` stat in `site.js` if the client confirms a new figure.
+- [ ] Check every course-dependent section with real data: navbar dropdown, home featured grid, sticky-scroll chips, course list and filters, detail pages, related courses, contact course select.
+- [ ] If the UK has courses, flip `regions.uk.status` to `live`.
+- [ ] Commit: `feat(courses): import client course list`.
+
+**Done when:** `courses.sa.js` holds the client's real list, validation passes, the sample banner no longer appears in dev, and every detail page renders with no empty sections.
 
 ## Phase 7 — Polish, performance, accessibility, SEO
 
@@ -309,6 +367,7 @@ Dark `bg-monitor-grid` section, with a 24 px radius panel inset from the page ed
 - [ ] SEO: titles/descriptions per page, Open Graph + Twitter image (1200×630 made from the logo), `sitemap.xml`, `robots.txt`, `LocalBusiness` + `Course` JSON-LD
 - [ ] Cross-browser: Chrome, Safari (macOS + iOS), Firefox, Edge, Samsung Internet
 - [ ] `grep -r "TODO(client)"` report sent to the client
+- [ ] Confirm the production bundle contains no sample fixtures (`grep -r "Sample course" dist/` returns nothing) and `VITE_SAMPLE_CONTENT` is unset
 
 ## Phase 8 — Deploy to Vercel & launch
 
@@ -316,15 +375,17 @@ Dark `bg-monitor-grid` section, with a 24 px radius panel inset from the page ed
 - [ ] Env vars: `VITE_WEB3FORMS_KEY`
 - [ ] Confirm the `vercel.json` SPA rewrite + add 301 redirects: `/about-us/` → `/about`, `/contact-us/` → `/contact`, `/courses/` → `/courses/sa`
 - [ ] Enable Vercel Web Analytics
+- [ ] **Launch gate:** the Course import step is done (real courses in `courses.sa.js`). If the client wants to launch before the list arrives, get written confirmation that the "course list is being updated" state is acceptable
+- [ ] **Launch gate:** A real POPIA privacy notice replaces the placeholder before launch.
 - [ ] Client review on the Vercel URL → written sign-off
 - [ ] Custom domain + DNS, verify HTTPS, submit the sitemap to Google Search Console
-- [ ] Handover README: editing courses, turning on the UK, replacing videos and logos
+- [ ] Handover README: adding and editing courses (with the intake table and `validateCourse()`), turning on the UK, replacing videos and logos
 
 ---
 
 ## Open items carried over (do not block the build)
 
-- Final SA course list (11 vs 18) and per-course details
+- New course list from the client (all fields in the Course import intake table). Imported in the Course import step; the old site's course list is not used
 - Hero video + 3 learning videos (AI-generated; **client must review CPR technique and facts** before publishing)
 - Reversed/SVG logo, accreditation logos, client logos with names, team photos, group specials text, contact email
 - Domain (keep heartbeattraining.net or new GR Heartbeat domain)

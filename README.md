@@ -2,7 +2,7 @@
 
 Frontend-only marketing site for GR Heartbeat (health & safety training), built with React + Vite and deployed on Vercel.
 
-Specs live in `docs/`: the build plan (`GR_Heartbeat_Implementation_Plan_v2.md`, primary), the colour system (`GR Heartbeat — Colour Theme.md`, overrides all colours) and the original PRD (background + data model).
+Specs live in `docs/`: the build plan (`GR_Heartbeat_Implementation_Plan_v2.1.md`, primary), the colour system (`GR Heartbeat — Colour Theme.md`, overrides all colours) and the original PRD (background + data model).
 
 ## Stack
 
@@ -42,18 +42,23 @@ src/
     brand/        logo (cropped from docs/brand/, WebP for the app)
     placeholders/ stand-in photos until real ones arrive
   components/
-    brand/        Logo, PulseLine, EcgDivider, EcgEdge, HeartbeatButton
+    brand/        Logo, WhatsAppIcon, PulseLine, EcgDivider, EcgEdge, HeartbeatButton
     motion/       Reveal, RevealStagger, ImageReveal, Parallax, CountUp, ChromeText,
-                  TiltCard, ScrollProgress
+                  TiltCard, ScrollProgress, Marquee
     ui/           Button, Container, Section, Eyebrow, Heading, Accent, Card, Badge, IconRing
     providers/    MotionProvider (reduced motion), SmoothScroll (Lenis)
-    layout/       RootLayout (temporary shell until Phase 2)
+    layout/       RootLayout, Navbar (+ CoursesMenu, MobileMenu, MenuToggle, NavBlip),
+                  FinalCta, Footer, WhatsAppFab, SkipLink, PageTransition (scroll + focus)
+    dev/          SampleContentBanner (development only)
     styleguide/   helpers for the /styleguide page
     courses/      CourseCard, CourseFilters, CourseFacts (Phase 5)
-  data/           all copy and content (brand, regions, styleguide; site/courses in Phase 3)
-  hooks/          useReducedMotionSafe, useMediaQuery, useElementSize
-  lib/            motion.js (motion presets), ecg.js (trace geometry), contrast.js, cx.js
-  pages/          Home, CoursesRegion, CourseDetail, About, Contact, NotFound, Styleguide
+  data/           all copy and content: site, navigation, categories, courses.sa/uk,
+                  fixtures/ (sample courses, dev only), privacy, brand, regions, styleguide
+  hooks/          useReducedMotionSafe, useSmoothScroll, useFocusTrap, useFabVisibility,
+                  useMediaQuery, useElementSize
+  lib/            courses.js (the only way to read course data), motion.js, ecg.js,
+                  smooth-scroll.js, scroll-positions.js, focus.js, contact.js, icons.js, ...
+  pages/          Home, CoursesRegion, CourseDetail, About, Contact, Privacy, NotFound, Styleguide
   routes.jsx      route table
   styles/         index.css (tokens + Tailwind)
   main.jsx
@@ -79,7 +84,8 @@ Open **`/styleguide`** (unlinked, `noindex`) to see every token, primitive and a
 | `/courses/:region`      | Course list (`sa` live, `uk` coming soon) |
 | `/courses/:region/:slug`| Course detail                             |
 | `/about`                | About Us                                  |
-| `/contact`              | Contact                                   |
+| `/contact`              | Contact (no final CTA band)               |
+| `/privacy`              | Privacy notice (placeholder until POPIA notice) |
 | `/styleguide`           | Internal design system (removed at launch) |
 | anything else           | 404                                       |
 
@@ -87,13 +93,27 @@ Open **`/styleguide`** (unlinked, `noindex`) to see every token, primitive and a
 
 All copy and course data lives in `src/data`; components never hard-code content.
 
+### Courses
+
+Course data is **not** taken from the old website. The client's new list is imported in the Course import step (see the v2.1 plan). Until then `courses.sa.js` and `courses.uk.js` are empty.
+
+- Components read courses only through `src/lib/courses.js` (`getCoursesByRegion`, `getFeaturedCourses`, `hasCourses`, ...), never by slug.
+- When a region's real list is empty, development uses the sample fixtures in `src/data/fixtures/courses.sample.js` and shows an amber "Showing sample courses" banner. Production builds never include them (check with `grep -r "Sample course" dist/`). Set `VITE_SAMPLE_CONTENT=true` to preview samples in a production build.
+- Every course-dependent component has an empty state for when there are no courses.
+
 ### Adding a course
 
-Add one object to `src/data/courses.sa.js` (created in Phase 3). The `slug` becomes the URL: `/courses/sa/<slug>`. See the course data model in the PRD for every field.
+Add one object to `src/data/courses.sa.js`. The `slug` becomes the URL: `/courses/sa/<slug>`. See the course data model in the PRD for every field.
 
 ### Launching the UK
 
 In `src/data/regions.js`, change `uk.status` from `'coming-soon'` to `'live'`, then add courses to `src/data/courses.uk.js`. No new components are needed.
+
+## Layout behaviour
+
+- Pages render under a floating navbar; `--nav-offset` (in `index.css`) is the space it takes. Every element with an `id` gets that as `scroll-margin-top`, so `#hash` links land below the navbar.
+- Route changes fade the page out and in. `PageTransition` then scrolls to the top, to the `#hash` target, or back to the saved position (back/forward and reload), and moves focus to the new page's `<h1>` for screen readers.
+- A route can hide the final CTA band with `handle: { finalCta: false }` in `routes.jsx`.
 
 ## Deployment
 

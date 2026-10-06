@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Users,
 } from 'lucide-react'
+import { Link } from 'react-router'
 
 import landscape from '@/assets/placeholders/photo-landscape.svg'
 import portrait from '@/assets/placeholders/photo-portrait.svg'
@@ -24,7 +25,7 @@ import ImageReveal from '@/components/motion/ImageReveal'
 import Parallax from '@/components/motion/Parallax'
 import Reveal from '@/components/motion/Reveal'
 import RevealStagger, { RevealItem } from '@/components/motion/RevealStagger'
-import ScrollProgress from '@/components/motion/ScrollProgress'
+import Marquee from '@/components/motion/Marquee'
 import TiltCard from '@/components/motion/TiltCard'
 import Demo from '@/components/styleguide/Demo'
 import FontCheck from '@/components/styleguide/FontCheck'
@@ -55,6 +56,7 @@ const chapters = [
   ['tones', 'Section tones'],
   ['pulse', 'Pulse line'],
   ['motion', 'Motion'],
+  ['layout', 'Layout'],
 ]
 
 const icons = [HeartPulse, ShieldCheck, Flame, Award, Users, CalendarCheck]
@@ -64,10 +66,9 @@ export default function Styleguide() {
     <div className="pb-32">
       <title>Design system | GR Heartbeat</title>
       <meta name="robots" content="noindex, nofollow" />
-      <ScrollProgress />
       <MotionToggle />
 
-      <header className="pt-16 pb-12 sm:pt-24">
+      <header className="pt-10 pb-12 sm:pt-14">
         <Container>
           <Eyebrow marker>Internal · not linked</Eyebrow>
           <Heading level={1} className="mt-3">
@@ -76,13 +77,13 @@ export default function Styleguide() {
           <p className="mt-4 max-w-2xl text-lead">{styleguide.intro}</p>
           <nav aria-label="Styleguide sections" className="mt-8 flex flex-wrap gap-2">
             {chapters.map(([id, label]) => (
-              <a
+              <Link
                 key={id}
-                href={`#${id}`}
+                to={`#${id}`}
                 className="rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-grey-300 hover:text-pulse-red"
               >
                 {label}
-              </a>
+              </Link>
             ))}
           </nav>
         </Container>
@@ -499,9 +500,48 @@ export default function Styleguide() {
           </Demo>
           <Demo
             title="ScrollProgress"
-            note="Pinned to the top of this page: a 2px red line with an ECG blip at its leading edge."
+            note="Global, at the top of every page: a 2px red line with an ECG blip at its leading edge."
           >
             <p>Scroll the page and watch the top edge of the viewport.</p>
+          </Demo>
+        </div>
+      </SgSection>
+
+      <SgSection id="layout" index={9} title="Layout">
+        <div className="space-y-6">
+          <Demo
+            title="Marquee"
+            note="Duplicated CSS-transform track. Pauses on hover, focus and off-screen; a static wrapped row under reduced motion."
+          >
+            <div className="space-y-5">
+              <Marquee duration={36} label="Sample logos">
+                {sample.marqueeItems.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-line bg-surface px-5 py-2.5 text-sm font-semibold whitespace-nowrap text-grey-600"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </Marquee>
+              <Marquee duration={48} reverse>
+                {sample.marqueeItems.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-line bg-white px-5 py-2.5 text-sm font-semibold whitespace-nowrap text-grey-600"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </Marquee>
+            </div>
+          </Demo>
+          <Demo title="Shell" note="These run on every page rather than in a demo box.">
+            <ul className="list-disc space-y-2 pl-5">
+              {sample.shellNotes.map((note) => (
+                <li key={note}>{note}</li>
+              ))}
+            </ul>
           </Demo>
         </div>
       </SgSection>

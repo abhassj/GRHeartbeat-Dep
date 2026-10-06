@@ -15,7 +15,8 @@ export default function ScrollProgress({ className }) {
   return (
     <div
       aria-hidden
-      className={cx('pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5', className)}
+      className={cx('pointer-events-none fixed inset-x-0 z-[60] h-0.5', className)}
+      style={{ top: 'var(--banner-h)' }}
     >
       <motion.div className="h-full origin-left bg-pulse-red" style={{ scaleX: progress }} />
       <motion.svg

@@ -14,7 +14,8 @@ const dots = {
   success: 'bg-success',
 }
 
-const shape = 'inline-flex items-center gap-1.5 rounded-full text-xs font-semibold tracking-wide'
+const shape =
+  'inline-flex shrink-0 items-center gap-1.5 rounded-full text-xs font-semibold tracking-wide whitespace-nowrap'
 
 /**
  * Small pill label. Tones: red (category / NQF), amber (coming soon), navy (meta),
