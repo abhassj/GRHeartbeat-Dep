@@ -1,4 +1,4 @@
-import { motion, useScroll, useSpring, useTransform } from 'motion/react'
+import { m, useScroll, useSpring, useTransform } from 'motion/react'
 import { cx } from '@/lib/cx'
 
 /**
@@ -18,8 +18,8 @@ export default function ScrollProgress({ className }) {
       className={cx('pointer-events-none fixed inset-x-0 z-[60] h-0.5', className)}
       style={{ top: 'var(--banner-h)' }}
     >
-      <motion.div className="h-full origin-left bg-pulse-red" style={{ scaleX: progress }} />
-      <motion.svg
+      <m.div className="h-full origin-left bg-pulse-red" style={{ scaleX: progress }} />
+      <m.svg
         viewBox="0 0 20 12"
         className="absolute top-0 left-0 h-3 w-5 -translate-y-[45%] text-pulse-red"
         style={{ x: blipX, opacity: blipOpacity }}
@@ -30,7 +30,7 @@ export default function ScrollProgress({ className }) {
         strokeLinejoin="round"
       >
         <path d="M0 6h6l2-4.5 3 9 2.5-6 1.5 1.5H20" />
-      </motion.svg>
+      </m.svg>
     </div>
   )
 }

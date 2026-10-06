@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { motion, useMotionValue, useSpring, useTransform } from 'motion/react'
+import { m, useMotionValue, useSpring, useTransform } from 'motion/react'
 import { useFinePointer } from '@/hooks/useMediaQuery'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { cx } from '@/lib/cx'
@@ -39,7 +39,7 @@ export default function TiltCard({ max = 4, glare = true, className, children })
   }
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       className={cx('relative', className)}
       style={{ rotateX, rotateY, transformPerspective: 900 }}
@@ -52,12 +52,12 @@ export default function TiltCard({ max = 4, glare = true, className, children })
           aria-hidden
           className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]"
         >
-          <motion.span
+          <m.span
             className="absolute -inset-1/2 bg-[radial-gradient(circle_at_center,rgb(255_255_255/0.55),transparent_45%)] mix-blend-soft-light"
             style={{ x: glareX, y: glareY, opacity: glareOpacity }}
           />
         </span>
       )}
-    </motion.div>
+    </m.div>
   )
 }

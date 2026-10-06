@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react'
-import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/react'
-import { useRegisterLoop } from '@/hooks/useLoops'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { AnimatePresence, m, useMotionValueEvent, useScroll } from 'motion/react'
+import { useLoopGate } from '@/hooks/useLoops'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
-import { cssCycleDelay } from '@/lib/heartbeat'
+import { syncToHeartbeat } from '@/lib/heartbeat'
 import { transition } from '@/lib/motion'
 
 /**
@@ -14,14 +14,18 @@ export default function ScrollCue({ label }) {
   const ref = useRef(null)
   const { scrollY } = useScroll()
   const [scrolled, setScrolled] = useState(false)
-  const [beatDelay] = useState(cssCycleDelay)
+  const blip = useRef(null)
   useMotionValueEvent(scrollY, 'change', (y) => y > 8 && setScrolled(true))
-  useRegisterLoop(ref, !reduced && !scrolled)
+  const turn = useLoopGate(ref, { group: 'hero', active: !reduced && !scrolled })
+  // Re-align to the shared heartbeat clock whenever the blip (re)starts.
+  useLayoutEffect(() => {
+    if (turn) syncToHeartbeat(blip.current)
+  }, [turn])
 
   return (
     <AnimatePresence>
       {!scrolled && (
-        <motion.div
+        <m.div
           ref={ref}
           aria-hidden
           className="pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs font-semibold tracking-[0.12em] text-grey-600 uppercase lg:flex"
@@ -44,12 +48,13 @@ export default function ScrollCue({ label }) {
               strokeWidth="1.75"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="origin-center animate-cue-beat"
-              style={{ '--beat-delay': beatDelay, transformBox: 'fill-box' }}
+              className={turn ? 'origin-center animate-cue-beat' : undefined}
+              ref={blip}
+              style={{ transformBox: 'fill-box' }}
             />
           </svg>
           {label}
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   )

@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { useMotionPreference } from '@/hooks/useReducedMotionSafe'
 import { cx } from '@/lib/cx'
 import { transition } from '@/lib/motion'
@@ -37,7 +37,7 @@ export default function MotionToggle() {
               )}
             >
               {active && (
-                <motion.span
+                <m.span
                   layoutId="motion-toggle-indicator"
                   className="absolute inset-0 rounded-full bg-ink"
                   transition={transition.morph}

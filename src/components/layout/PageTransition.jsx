@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useLocation, useNavigationType, useOutlet } from 'react-router'
-import { AnimatePresence, motion, PresenceContext } from 'motion/react'
+import { AnimatePresence, m, PresenceContext } from 'motion/react'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { useSmoothScroll } from '@/hooks/useSmoothScroll'
 import { focusElement, focusPageStart } from '@/lib/focus'
@@ -36,7 +36,7 @@ export default function PageTransition() {
     <>
       {!reduced && location.pathname !== firstPath && <RouteSweep key={location.pathname} />}
       <AnimatePresence mode="wait" initial={false}>
-        <motion.div
+        <m.div
           key={location.pathname}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: { duration: reduced ? 0 : ENTER, ease: ease.out } }}
@@ -49,7 +49,7 @@ export default function PageTransition() {
           <PresenceContext value={null}>
             <FrozenOutlet outlet={outlet} />
           </PresenceContext>
-        </motion.div>
+        </m.div>
       </AnimatePresence>
     </>
   )
@@ -132,7 +132,7 @@ function useSameRouteHash(location) {
 /** One red ECG trace sweeping across the top of the viewport on route change. */
 function RouteSweep() {
   return (
-    <motion.svg
+    <m.svg
       aria-hidden
       viewBox="0 0 240 24"
       className="pointer-events-none fixed left-0 z-[55] h-6 w-60 text-pulse-red"
@@ -149,6 +149,6 @@ function RouteSweep() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-    </motion.svg>
+    </m.svg>
   )
 }

@@ -1,7 +1,6 @@
 import { useRef } from 'react'
-import { useInView } from 'motion/react'
-import { useRegisterLoop } from '@/hooks/useLoops'
-import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
+import { useLoopGate } from '@/hooks/useLoops'
+import { useMotionPaused, useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { cx } from '@/lib/cx'
 
 /**
@@ -16,13 +15,15 @@ export default function Marquee({
   reverse = false,
   gap = '3rem',
   label,
+  loopGroup,
   className,
   children,
 }) {
   const reduced = useReducedMotionSafe()
+  const paused = useMotionPaused()
   const ref = useRef(null)
-  const inView = useInView(ref, { amount: 0 })
-  useRegisterLoop(ref, !reduced)
+  // A decorative loop: it moves only while the loop arbiter gives it the turn.
+  const turn = useLoopGate(ref, { group: loopGroup, active: !reduced })
 
   if (reduced) {
     return (
@@ -42,6 +43,8 @@ export default function Marquee({
   return (
     <div
       ref={ref}
+      data-loop="marquee"
+      data-running={String(turn && !paused)}
       role={label ? 'group' : undefined}
       aria-label={label}
       className={cx(
@@ -53,7 +56,7 @@ export default function Marquee({
         className={cx(
           'flex w-max animate-marquee group-focus-within:[animation-play-state:paused] group-hover:[animation-play-state:paused]',
           reverse && '[animation-direction:reverse]',
-          !inView && '[animation-play-state:paused]',
+          !turn && '[animation-play-state:paused]',
         )}
         style={{ '--marquee-duration': `${duration}s` }}
       >

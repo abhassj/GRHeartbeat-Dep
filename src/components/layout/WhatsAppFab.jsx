@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/react'
+import { AnimatePresence, m, useMotionValueEvent, useScroll } from 'motion/react'
 import WhatsAppIcon from '@/components/brand/WhatsAppIcon'
 import { whatsappFab as copy } from '@/data/navigation'
 import { useFabBlocked } from '@/hooks/useFabVisibility'
@@ -29,7 +29,7 @@ export default function WhatsAppFab() {
   return (
     <AnimatePresence>
       {visible && (
-        <motion.a
+        <m.a
           key="whatsapp-fab"
           href={whatsappHref(copy.message)}
           target="_blank"
@@ -42,7 +42,7 @@ export default function WhatsAppFab() {
           transition={reduced ? { duration: 0 } : transition.base}
         >
           {pulseNow && (
-            <motion.span
+            <m.span
               aria-hidden
               className="absolute inset-0 rounded-full bg-whatsapp"
               initial={{ scale: 1, opacity: 0.55 }}
@@ -52,7 +52,7 @@ export default function WhatsAppFab() {
             />
           )}
           <WhatsAppIcon size={26} className="relative" />
-        </motion.a>
+        </m.a>
       )}
     </AnimatePresence>
   )

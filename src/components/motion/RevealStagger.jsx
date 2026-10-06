@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { stagger, variants, viewport } from '@/lib/motion'
 
@@ -25,7 +25,7 @@ export default function RevealStagger({
     )
   }
 
-  const MotionTag = motion[as]
+  const MotionTag = m[as]
   return (
     <MotionTag
       className={className}
@@ -55,7 +55,7 @@ export function RevealItem({ as = 'div', className, children, ...props }) {
     )
   }
 
-  const MotionTag = motion[as]
+  const MotionTag = m[as]
   return (
     <MotionTag className={className} variants={variants.fadeUp} {...props}>
       {children}

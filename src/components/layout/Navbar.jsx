@@ -1,6 +1,6 @@
 import { useCallback, useId, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
-import { LayoutGroup, motion, useMotionValueEvent, useScroll } from 'motion/react'
+import { LayoutGroup, m, useMotionValueEvent, useScroll } from 'motion/react'
 import Logo from '@/components/brand/Logo'
 import WhatsAppIcon from '@/components/brand/WhatsAppIcon'
 import CoursesMenu from '@/components/layout/CoursesMenu'
@@ -63,7 +63,7 @@ export default function Navbar() {
 
   return (
     <>
-      <motion.header
+      <m.header
         className="fixed inset-x-0 z-50 px-4"
         style={{ top: 'calc(var(--banner-h) + var(--nav-inset))' }}
         animate={{ y: hidden && !pinned ? '-170%' : '0%' }}
@@ -79,7 +79,7 @@ export default function Navbar() {
         >
           <NavBackground scrolled={scrolled || drawerOpen} />
 
-          <motion.div
+          <m.div
             className="origin-left justify-self-start"
             animate={{ scale: scrolled ? 0.92 : 1 }}
             transition={transition.base}
@@ -87,7 +87,7 @@ export default function Navbar() {
             <Link to="/" className="flex rounded-lg" aria-label={navLabels.homeLink}>
               <Logo alt="" className="h-9 w-auto max-w-none sm:h-10" />
             </Link>
-          </motion.div>
+          </m.div>
 
           <LayoutGroup id="main-nav">
             <ul
@@ -152,7 +152,7 @@ export default function Navbar() {
             />
           </div>
         </nav>
-      </motion.header>
+      </m.header>
 
       <MobileMenu id={drawerId} open={drawerOpen} onClose={closeDrawer} toggleRef={toggleRef} />
     </>
@@ -162,22 +162,22 @@ export default function Navbar() {
 /** Two crossfading pill backgrounds (solid at the top, frosted once scrolled), scaled to shrink. */
 function NavBackground({ scrolled }) {
   return (
-    <motion.div
+    <m.div
       aria-hidden
       className="absolute inset-0 -z-10"
       animate={{ scaleY: scrolled ? SHRUNK : 1 }}
       transition={transition.base}
     >
-      <motion.div
+      <m.div
         className="absolute inset-0 rounded-[36px] border border-line bg-white"
         animate={{ opacity: scrolled ? 0 : 1 }}
         transition={transition.base}
       />
-      <motion.div
+      <m.div
         className="absolute inset-0 rounded-[36px] border border-line/70 bg-white/92 shadow-card backdrop-blur-md"
         animate={{ opacity: scrolled ? 1 : 0 }}
         transition={transition.base}
       />
-    </motion.div>
+    </m.div>
   )
 }

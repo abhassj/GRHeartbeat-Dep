@@ -1,5 +1,6 @@
-import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
-import { MotionConfig, useReducedMotion } from 'motion/react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { LazyMotion, MotionConfig, useReducedMotion } from 'motion/react'
+import { initialMotionFeatures, loadFullMotionFeatures } from '@/lib/motion-features'
 import { MotionPreferenceContext } from '@/lib/motion-preference'
 
 const PAUSED_KEY = 'gr:motion-paused'
@@ -24,6 +25,19 @@ export default function MotionProvider({ children }) {
   const [override, setOverride] = useState(null)
   const [paused, setPausedState] = useState(readPaused)
   const reduced = override ? override === 'reduce' : system
+  const [features, setFeatures] = useState(initialMotionFeatures)
+
+  // Upgrade to the full feature set (layout animations) once the page has loaded.
+  useEffect(() => {
+    let active = true
+    const load = () => loadFullMotionFeatures().then((full) => active && setFeatures(full))
+    if (document.readyState === 'complete') load()
+    else window.addEventListener('load', load, { once: true })
+    return () => {
+      active = false
+      window.removeEventListener('load', load)
+    }
+  }, [])
 
   useLayoutEffect(() => {
     document.documentElement.dataset.motion = reduced ? 'reduce' : 'full'
@@ -50,7 +64,9 @@ export default function MotionProvider({ children }) {
 
   return (
     <MotionPreferenceContext value={value}>
-      <MotionConfig reducedMotion={reduced ? 'always' : 'never'}>{children}</MotionConfig>
+      <LazyMotion features={features} strict>
+        <MotionConfig reducedMotion={reduced ? 'always' : 'never'}>{children}</MotionConfig>
+      </LazyMotion>
     </MotionPreferenceContext>
   )
 }

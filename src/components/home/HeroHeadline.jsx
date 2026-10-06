@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import Accent from '@/components/ui/Accent'
 import Heading from '@/components/ui/Heading'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
@@ -27,7 +27,7 @@ export default function HeroHeadline({ id, motto }) {
               {reduced ? (
                 <span className="inline-block">{inner}</span>
               ) : (
-                <motion.span
+                <m.span
                   className="inline-block"
                   initial={{ y: '110%' }}
                   animate={{ y: '0%' }}
@@ -38,7 +38,7 @@ export default function HeroHeadline({ id, motto }) {
                   }}
                 >
                   {inner}
-                </motion.span>
+                </m.span>
               )}
             </span>
             {index < words.length - 1 && ' '}

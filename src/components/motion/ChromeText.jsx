@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { motion, useInView } from 'motion/react'
+import { m, useInView } from 'motion/react'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { cx } from '@/lib/cx'
 import { ease, revealMargin } from '@/lib/motion'
@@ -22,7 +22,7 @@ export default function ChromeText({ as: Tag = 'span', className, children }) {
       {!reduced && (
         // The sheen moves its background-position: a one-off, paint-only sweep on a few
         // glyphs. A text-clipped gradient cannot be moved with transform.
-        <motion.span
+        <m.span
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-clip-text text-transparent forced-colors:hidden"
           style={{ backgroundImage: sheen, backgroundSize: '250% 100%' }}
@@ -31,7 +31,7 @@ export default function ChromeText({ as: Tag = 'span', className, children }) {
           transition={{ duration: 1.4, ease: ease.inOut, delay: 0.2 }}
         >
           {children}
-        </motion.span>
+        </m.span>
       )}
     </Tag>
   )

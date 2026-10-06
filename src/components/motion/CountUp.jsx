@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { animate, motion, useInView, useMotionValue, useTransform } from 'motion/react'
+import { animate, m, useInView, useMotionValue, useTransform } from 'motion/react'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { ease, revealMargin } from '@/lib/motion'
 
@@ -35,9 +35,9 @@ export default function CountUp({
       {reduced ? (
         <span aria-hidden>{finalText}</span>
       ) : (
-        <motion.span aria-hidden className="tabular-nums">
+        <m.span aria-hidden className="tabular-nums">
           {display}
-        </motion.span>
+        </m.span>
       )}
     </span>
   )

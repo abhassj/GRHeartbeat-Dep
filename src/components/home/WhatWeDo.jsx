@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router'
-import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform } from 'motion/react'
+import { AnimatePresence, m, useMotionValueEvent, useScroll, useTransform } from 'motion/react'
 import { ArrowRight } from 'lucide-react'
 import landscapePlaceholder from '@/assets/placeholders/photo-landscape.svg'
 import portraitPlaceholder from '@/assets/placeholders/photo-portrait.svg'
@@ -105,7 +105,7 @@ function StickyPillars({ pillars }) {
       <div className="sticky top-[calc(var(--nav-offset)+1rem)] h-[70vh] self-start">
         <div className="relative size-full overflow-hidden rounded-panel bg-grey-100 shadow-card">
           <AnimatePresence initial={false}>
-            <motion.img
+            <m.img
               key={current.id}
               src={image.src}
               srcSet={image.srcSet}
@@ -127,11 +127,11 @@ function StickyPillars({ pillars }) {
             aria-hidden
             className="absolute top-8 bottom-8 left-6 w-0.5 rounded-full bg-white/50"
           >
-            <motion.div
+            <m.div
               className="absolute inset-0 origin-top rounded-full bg-pulse-red"
               style={{ scaleY: scrollYProgress }}
             />
-            <motion.div className="absolute inset-x-0 top-0 h-full" style={{ y: blipY }}>
+            <m.div className="absolute inset-x-0 top-0 h-full" style={{ y: blipY }}>
               <svg
                 viewBox="0 0 16 24"
                 className="absolute -top-3 -left-[7px] h-6 w-4 text-pulse-red"
@@ -145,13 +145,13 @@ function StickyPillars({ pillars }) {
                   strokeLinejoin="round"
                 />
               </svg>
-            </motion.div>
+            </m.div>
           </div>
 
           {/* Glass label naming the active pillar */}
           <div className="absolute bottom-6 left-12 overflow-hidden rounded-full border border-white/60 bg-white/80 px-5 py-2.5 shadow-card backdrop-blur-md">
             <AnimatePresence mode="wait" initial={false}>
-              <motion.p
+              <m.p
                 key={current.id}
                 className="font-display text-sm font-bold text-ink"
                 initial={{ y: 14, opacity: 0 }}
@@ -160,7 +160,7 @@ function StickyPillars({ pillars }) {
                 transition={{ duration: 0.25, ease: ease.out }}
               >
                 {current.title}
-              </motion.p>
+              </m.p>
             </AnimatePresence>
           </div>
         </div>
@@ -168,14 +168,14 @@ function StickyPillars({ pillars }) {
 
       <ol>
         {pillars.map((pillar, index) => (
-          <motion.li
+          <m.li
             key={pillar.id}
             className="flex min-h-[90svh] flex-col justify-center py-10"
             animate={{ opacity: index === active ? 1 : 0.4 }}
             transition={{ duration: 0.4, ease: ease.out }}
           >
             <PillarText pillar={pillar} index={index} />
-          </motion.li>
+          </m.li>
         ))}
       </ol>
     </div>

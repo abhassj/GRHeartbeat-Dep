@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, m } from 'motion/react'
 import MotionPauseButton from '@/components/motion/MotionPauseButton'
 import { useNeedsFloatingControl } from '@/hooks/useLoops'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
@@ -15,7 +15,7 @@ export default function FloatingMotionControl() {
   return (
     <AnimatePresence>
       {needed && !reduced && (
-        <motion.div
+        <m.div
           key="motion-control"
           className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-30 sm:bottom-6 sm:left-6"
           initial={{ opacity: 0, y: 8 }}
@@ -24,7 +24,7 @@ export default function FloatingMotionControl() {
           transition={transition.fast}
         >
           <MotionPauseButton variant="floating" register={false} />
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   )

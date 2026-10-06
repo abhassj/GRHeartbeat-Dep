@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { ease, transition } from '@/lib/motion'
 
@@ -11,7 +11,7 @@ const D = 'M1 6h8l2-3 3 6 3-8 2 5h9'
 export default function NavBlip({ drawKey }) {
   const reduced = useReducedMotionSafe()
   return (
-    <motion.span
+    <m.span
       layoutId="nav-blip"
       aria-hidden
       className="pointer-events-none absolute inset-x-0 -bottom-1 mx-auto block h-3 w-7 text-pulse-red"
@@ -27,7 +27,7 @@ export default function NavBlip({ drawKey }) {
             strokeLinejoin="round"
           />
         ) : (
-          <motion.path
+          <m.path
             key={drawKey}
             d={D}
             stroke="currentColor"
@@ -40,6 +40,6 @@ export default function NavBlip({ drawKey }) {
           />
         )}
       </svg>
-    </motion.span>
+    </m.span>
   )
 }

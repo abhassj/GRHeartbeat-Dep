@@ -3,6 +3,7 @@
 // Fails if dist/ contains development-only content or any file over 3 MB:
 // - "Sample course" (case-insensitive): sample course fixtures
 // - "Client logo": client-logo placeholders
+// - "Accreditation placeholder": trust-strip placeholders
 // - "__router", "__scrollPositions": development test hooks
 // Plain Node, no dependencies.
 
@@ -17,6 +18,7 @@ const TEXT = /\.(html|js|mjs|css|json|svg|txt|xml|webmanifest|map)$/
 const FORBIDDEN = [
   { label: 'Sample course', pattern: /sample course/i },
   { label: 'Client logo', pattern: /Client logo/ },
+  { label: 'Accreditation placeholder', pattern: /Accreditation placeholder/ },
   { label: '__router', pattern: /__router/ },
   { label: '__scrollPositions', pattern: /__scrollPositions/ },
 ]

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { useInView } from 'motion/react'
 import { getPhoto } from '@/data/photos'
-import { useRegisterLoop } from '@/hooks/useLoops'
+import { useLoopGate } from '@/hooks/useLoops'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useMotionPaused, useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { cx } from '@/lib/cx'
@@ -37,7 +36,6 @@ export default function HeroVideo({ config, className }) {
   const desktop = useMediaQuery('(min-width: 1024px)')
   const frame = useRef(null)
   const stack = useRef(null)
-  const inView = useInView(frame, { amount: 0.1 })
   const [saveData] = useState(prefersData)
   const [armed, setArmed] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -48,7 +46,8 @@ export default function HeroVideo({ config, className }) {
   const canPlay = config.sources.length > 0 && !reduced && !saveData
   const kenBurns = !canPlay && !reduced
   const position = desktop ? config.objectPosition.desktop : config.objectPosition.mobile
-  useRegisterLoop(frame, (canPlay && armed) || kenBurns)
+  // Video and Ken Burns zoom are decorative loops in the hero group (see lib/loops.js).
+  const turn = useLoopGate(frame, { group: 'hero', active: (canPlay && armed) || kenBurns })
 
   useEffect(() => (canPlay ? afterFirstPaint(() => setArmed(true)) : undefined), [canPlay])
 
@@ -128,15 +127,21 @@ export default function HeroVideo({ config, className }) {
     }
   }, [armed, config.loopCrossfadeMs])
 
-  // Play only while on screen and not paused by the visitor.
+  // Play only while the hero has the loop turn (on screen, no other loop bigger) and the
+  // visitor has not paused motion.
   useEffect(() => {
     if (!armed || !controller.current) return
-    if (inView && !paused) controller.current.play()
+    if (turn && !paused) controller.current.play()
     else controller.current.pause()
-  }, [armed, inView, paused])
+  }, [armed, turn, paused])
 
   return (
-    <div ref={frame} className={cx('relative size-full overflow-hidden bg-grey-100', className)}>
+    <div
+      ref={frame}
+      data-loop="hero"
+      data-running={String(turn && !paused && ((canPlay && armed) || kenBurns))}
+      className={cx('relative size-full overflow-hidden bg-grey-100', className)}
+    >
       {poster && (
         <img
           src={poster.src}
@@ -147,7 +152,10 @@ export default function HeroVideo({ config, className }) {
           height={poster.height}
           fetchPriority="high"
           decoding="async"
-          className={cx('absolute inset-0 size-full object-cover', kenBurns && 'animate-ken-burns')}
+          className={cx(
+            'absolute inset-0 size-full object-cover',
+            kenBurns && turn && 'animate-ken-burns',
+          )}
           style={{ objectPosition: position }}
         />
       )}

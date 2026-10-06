@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'motion/react'
+import { m, useScroll, useTransform } from 'motion/react'
 import { ArrowRight, Check } from 'lucide-react'
 import EcgEdge from '@/components/brand/EcgEdge'
 import HeartbeatButton from '@/components/brand/HeartbeatButton'
@@ -39,17 +39,17 @@ export default function Hero() {
   return (
     <section ref={section} aria-labelledby="hero-heading" className="relative">
       <Container className="grid min-h-[calc(100svh-var(--nav-offset))] items-center gap-10 pt-6 pb-12 lg:grid-cols-2 lg:gap-14 lg:pb-20">
-        <motion.div style={reduced ? undefined : { y: textY, opacity: textOpacity }}>
+        <m.div style={reduced ? undefined : { y: textY, opacity: textOpacity }}>
           <Eyebrow marker>{hero.eyebrow}</Eyebrow>
           <HeroHeadline id="hero-heading" motto={hero.motto} />
-          <motion.div
+          <m.div
             initial={reduced ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...transition.slow, delay: reduced ? 0 : 0.55 }}
           >
             <p className="mt-6 max-w-xl text-lead">{hero.subline}</p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <HeartbeatButton to={hero.primaryCta.to} icon={ArrowRight}>
+              <HeartbeatButton to={hero.primaryCta.to} icon={ArrowRight} loopGroup="hero">
                 {hero.primaryCta.label}
               </HeartbeatButton>
               <Button to={hero.secondaryCta.to} variant="secondary" size="lg">
@@ -66,11 +66,11 @@ export default function Hero() {
                 ))}
               </ul>
             )}
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
 
         {hasVideoOrPoster && (
-          <motion.div
+          <m.div
             className="relative origin-center"
             style={reduced ? undefined : { scale: panelScale }}
             initial={reduced ? false : { opacity: 0 }}
@@ -84,6 +84,7 @@ export default function Hero() {
               position={0.5}
               pulse
               pulseProps={{
+                loopGroup: 'hero',
                 sync: true,
                 sweep: 1.4,
                 strokeWidth: 2.5,
@@ -92,15 +93,15 @@ export default function Hero() {
               }}
               className="aspect-[16/10] w-full lg:aspect-[4/5] lg:max-h-[calc(100svh-var(--nav-offset)-4rem)]"
             >
-              <motion.div
+              <m.div
                 className="size-full overflow-hidden rounded-r-panel"
                 style={reduced ? undefined : { clipPath }}
               >
                 <HeroVideo config={heroVideo} />
-              </motion.div>
+              </m.div>
             </EcgEdge>
             {!reduced && <MotionPauseButton className="absolute right-4 bottom-4 z-10" />}
-          </motion.div>
+          </m.div>
         )}
       </Container>
       <ScrollCue label={hero.scrollCue} />

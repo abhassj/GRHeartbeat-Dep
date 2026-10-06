@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { motion, useInView, useScroll, useTransform } from 'motion/react'
+import { m, useInView, useScroll, useTransform } from 'motion/react'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { cx } from '@/lib/cx'
 import { revealMargin, transition } from '@/lib/motion'
@@ -42,26 +42,23 @@ export default function ImageReveal({
       {reduced ? (
         image
       ) : (
-        <motion.div
+        <m.div
           className="size-full"
           initial={{ clipPath: 'inset(0% 0% 100% 0%)' }}
           animate={inView ? { clipPath: 'inset(0% 0% 0% 0%)' } : undefined}
           transition={transition.slow}
         >
-          <motion.div
-            className="size-full"
-            style={parallax ? { y: drift, scale: 1.18 } : undefined}
-          >
-            <motion.div
+          <m.div className="size-full" style={parallax ? { y: drift, scale: 1.18 } : undefined}>
+            <m.div
               className="size-full"
               initial={{ scale: 1.15 }}
               animate={inView ? { scale: 1 } : undefined}
               transition={{ ...transition.slow, duration: transition.slow.duration * 1.4 }}
             >
               {image}
-            </motion.div>
-          </motion.div>
-        </motion.div>
+            </m.div>
+          </m.div>
+        </m.div>
       )}
     </div>
   )

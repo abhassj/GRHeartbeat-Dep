@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
-import { motion, useInView } from 'motion/react'
+import { m, useInView } from 'motion/react'
 import { useElementSize } from '@/hooks/useElementSize'
-import { useRegisterLoop } from '@/hooks/useLoops'
+import { useLoopGate } from '@/hooks/useLoops'
 import { useMotionPaused, useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { cx } from '@/lib/cx'
 import { beatPositions, buildTrace } from '@/lib/ecg'
@@ -29,7 +29,8 @@ const BLIP_GLOW_PX = 72
  * - bpm: blip speed in beats per minute (one sweep per beat)
  * - sync: beat on the shared 5 s heartbeat clock instead (lib/heartbeat.js): the blip crosses
  *   the first spike exactly when the HeartbeatButton glows; sweep (s) sets its travel time
- * Loops register for the pause control and stop while the visitor has paused motion.
+ * Loops go through the loop arbiter (loopGroup names the group; one group animates at a time)
+ * and stop while the visitor has paused motion.
  * - loop: keep beating (false = one blip after drawing); blip: show the blip at all
  * - draw: 'mount' | 'view' (when scrolled into view) | 'none' (start fully drawn)
  * - drawDuration, delay (s), vertical (trace runs top → bottom)
@@ -53,6 +54,7 @@ export default function PulseLine({
   vertical = false,
   sync = false,
   sweep,
+  loopGroup,
   className,
   style,
 }) {
@@ -98,9 +100,11 @@ export default function PulseLine({
     return () => clearTimeout(timer)
   }, [drawn, startDraw, trace, delay, drawDuration])
 
+  // A repeating blip is a decorative loop: it only runs while the loop arbiter gives its
+  // group the turn (lib/loops.js). One-off blips (loop=false, e.g. dividers) are not gated.
   const looping = blip && loop && !reduced && drawn
-  useRegisterLoop(ref, looping)
-  const showBlip = blip && !reduced && !paused && drawn && inView && trace
+  const turn = useLoopGate(ref, { group: loopGroup, active: looping })
+  const showBlip = blip && !reduced && !paused && drawn && inView && trace && (!loop || turn)
   const period = sync ? HEARTBEAT_S : beatSeconds(bpm)
   const travel = Math.min(sweep ?? period * 0.92, period)
   const spikeAt = sync ? (beatPositions(beats)[0] ?? 0.5) : null
@@ -114,6 +118,8 @@ export default function PulseLine({
   return (
     <div
       ref={ref}
+      data-loop={looping ? (loopGroup ?? 'pulse') : undefined}
+      data-running={looping ? String(Boolean(showBlip)) : undefined}
       aria-hidden
       className={cx('pointer-events-none relative', className)}
       style={style}
@@ -135,7 +141,7 @@ export default function PulseLine({
           {reduced || draw === 'none' ? (
             <path d={trace.d} style={{ ...stroke, stroke: color, strokeWidth }} />
           ) : (
-            <motion.path
+            <m.path
               d={trace.d}
               style={{ ...stroke, stroke: color, strokeWidth }}
               initial={{ pathLength: 0, opacity: 0 }}
@@ -209,16 +215,13 @@ function Blip({
   return (
     <g>
       {filterId && (
-        <motion.path
+        <m.path
           d={trace.d}
           filter={`url(#${filterId})`}
           {...sweep(halo, { stroke: color, strokeWidth: strokeWidth * 4, opacity: 0.7 })}
         />
       )}
-      <motion.path
-        d={trace.d}
-        {...sweep(core, { stroke: blipColor, strokeWidth: strokeWidth * 1.6 })}
-      />
+      <m.path d={trace.d} {...sweep(core, { stroke: blipColor, strokeWidth: strokeWidth * 1.6 })} />
     </g>
   )
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Link, NavLink } from 'react-router'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, m } from 'motion/react'
 import { ArrowRight, Phone } from 'lucide-react'
 import WhatsAppIcon from '@/components/brand/WhatsAppIcon'
 import Badge from '@/components/ui/Badge'
@@ -60,7 +60,7 @@ export default function MobileMenu({ id, open, onClose, toggleRef }) {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
+        <m.div
           key="drawer"
           className="fixed inset-0 z-40 lg:hidden"
           initial={reduced ? false : { opacity: 0 }}
@@ -68,7 +68,7 @@ export default function MobileMenu({ id, open, onClose, toggleRef }) {
           exit={reduced ? undefined : { opacity: 0, transition: { duration: 0.2, delay: 0.1 } }}
         >
           <div aria-hidden className="absolute inset-0 bg-ink/30" onClick={onClose} />
-          <motion.div
+          <m.div
             ref={drawer}
             id={id}
             // A div dialog (not <dialog>.showModal()) so the navbar toggle above it stays
@@ -84,14 +84,14 @@ export default function MobileMenu({ id, open, onClose, toggleRef }) {
             transition={{ duration: 0.4, ease: ease.out }}
           >
             <div className="flex-1 overflow-y-auto overscroll-contain px-6 pb-6">
-              <motion.ul
+              <m.ul
                 className="space-y-1"
                 variants={reduced ? undefined : listVariants}
                 initial={reduced ? false : 'hidden'}
                 animate="visible"
               >
                 {links.map((item) => (
-                  <motion.li key={item.to} variants={reduced ? undefined : itemVariants}>
+                  <m.li key={item.to} variants={reduced ? undefined : itemVariants}>
                     <NavLink
                       to={item.to}
                       end
@@ -105,10 +105,10 @@ export default function MobileMenu({ id, open, onClose, toggleRef }) {
                       {item.label}
                       <ArrowRight aria-hidden size={20} className="text-grey-400" />
                     </NavLink>
-                  </motion.li>
+                  </m.li>
                 ))}
 
-                <motion.li variants={reduced ? undefined : itemVariants} className="pt-5">
+                <m.li variants={reduced ? undefined : itemVariants} className="pt-5">
                   <p className="pb-3 text-eyebrow font-bold tracking-[0.12em] text-navy uppercase">
                     {mobileMenu.coursesHeading}
                   </p>
@@ -138,8 +138,8 @@ export default function MobileMenu({ id, open, onClose, toggleRef }) {
                       line={coursesMenu.uk.line}
                     />
                   </div>
-                </motion.li>
-              </motion.ul>
+                </m.li>
+              </m.ul>
             </div>
 
             <div className="grid grid-cols-2 gap-3 border-t border-line bg-white px-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
@@ -157,8 +157,8 @@ export default function MobileMenu({ id, open, onClose, toggleRef }) {
                 {mobileMenu.whatsappLabel}
               </Button>
             </div>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       )}
     </AnimatePresence>
   )

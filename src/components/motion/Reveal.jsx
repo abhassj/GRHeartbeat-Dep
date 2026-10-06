@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { distance, transition, viewport } from '@/lib/motion'
 
@@ -26,7 +26,7 @@ export default function Reveal({
     )
   }
 
-  const MotionTag = motion[as]
+  const MotionTag = m[as]
   return (
     <MotionTag
       className={className}

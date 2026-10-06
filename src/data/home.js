@@ -91,39 +91,67 @@ export const home = {
   findCourse: {
     eyebrow: 'Courses',
     heading: { lead: 'Find your', accent: 'course' },
+    tabsLabel: 'Choose a region',
     regions: { sa: 'South Africa', uk: 'United Kingdom' },
+    regionBadges: { sa: 'Live', uk: 'Coming soon' },
     viewAll: (n) => `View all ${n} South African courses`,
     // Shown while no courses are published (plan wording).
     emptyLine: 'Our full course list is being updated — call or WhatsApp us for current courses.',
+    categoryLink: 'See courses',
+    callLabel: 'Call us',
+    whatsappLabel: 'WhatsApp us',
+    whatsappMessage: `Hi ${site.name}, I'd like to know which courses you currently offer.`,
     uk: {
+      badge: 'Coming soon',
       heading: `We're bringing ${site.name} to the UK`,
-      text: 'Register your interest and we will let you know when UK training opens.',
-      cta: 'Register interest',
-      emailSubject: 'UK training: register interest',
+      text: 'UK training is on its way. Get in touch and we will let you know when it opens.',
+      whatsappLabel: 'Ask on WhatsApp',
+      whatsappMessage: `Hi ${site.name}, please let me know when UK training opens.`,
+      contactLabel: 'Contact us',
+      contactTo: '/contact',
     },
   },
 
-  // 4.6 Why it matters: CPR monitor + learning videos (videos.js)
+  // 4.6 Why it matters: CPR rhythm monitor + "Try the rhythm" + learning videos (videos.js)
   whyItMatters: {
     eyebrow: 'Why it matters',
-    heading: 'Why it matters',
+    heading: { lead: 'Every second', accent: 'counts' },
     monitor: {
       // Rate guidance from the plan. TODO(client): confirm the CPR wording.
       lead: 'Hands-only CPR: push hard and fast in the centre of the chest, 100–120 compressions per minute.',
       tie: 'Training lets you practise this rhythm with an instructor before you ever need it.',
       cta: { label: 'Explore first aid training', category: 'first-aid' },
-      targetBpm: [100, 120],
+      label: 'Rhythm monitor',
       autoBpm: 110,
+      targetBpm: [100, 120],
       bpmUnit: 'BPM',
-      tryLabel: 'Try the rhythm',
+      targetLabel: 'Target 100–120',
+      tapModeLabel: 'Your rhythm',
+      ariaLabel: 'Animated heart-rhythm trace at 110 beats per minute',
+    },
+    game: {
+      heading: 'Try the rhythm',
+      hint: 'Tap the button in time with compressions. With the button focused, Space or Enter works too.',
       tapLabel: 'Tap',
-      hint: 'Tap the button (or press Space) in time with compressions.',
-      feedback: {
-        slow: 'Too slow, push faster',
-        good: 'Perfect rhythm',
-        fast: 'Too fast, slow down',
+      tapAriaLabel: 'Tap in rhythm',
+      resetLabel: 'Reset',
+      idle: 'Start tapping to see your rate.',
+      warming: (n) => `Keep going… ${n} more ${n === 1 ? 'tap' : 'taps'}`,
+      zones: {
+        slow: { label: 'Too slow', advice: 'Push faster' },
+        good: { label: 'On target', advice: 'Perfect rhythm' },
+        fast: { label: 'Too fast', advice: 'Slow down a little' },
       },
-      note: 'Practice tool only — not a substitute for certified training.',
+      announce: (bpm, zone) => `${bpm} per minute. ${zone.label}. ${zone.advice}.`,
+      // TODO(client): confirm the emergency numbers and the wording of this disclaimer.
+      disclaimer:
+        'Rhythm practice only, not CPR training. In an emergency call 10177 or 112 from a mobile.',
+    },
+    videos: {
+      heading: 'Learn why it matters',
+      comingSoonIntro: 'Short explainer videos are on their way.',
+      relatedLabel: 'Related courses',
+      chaptersLabel: 'Choose a video',
     },
   },
 

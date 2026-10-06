@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef } from 'react'
 import { Link } from 'react-router'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, m } from 'motion/react'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import TiltCard from '@/components/motion/TiltCard'
 import Badge from '@/components/ui/Badge'
@@ -148,7 +148,7 @@ export default function CoursesMenu({ open, onOpenChange, active, onHoverChange 
 
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             ref={panel}
             id={panelId}
             onKeyDown={onPanelKeyDown}
@@ -159,18 +159,18 @@ export default function CoursesMenu({ open, onOpenChange, active, onHoverChange 
             exit={reduced ? undefined : 'exit'}
           >
             <div className="grid gap-3 sm:grid-cols-2">
-              <motion.div variants={reduced ? undefined : cardVariants}>
+              <m.div variants={reduced ? undefined : cardVariants}>
                 <TiltCard className="h-full rounded-card">
                   <SouthAfricaCard />
                 </TiltCard>
-              </motion.div>
-              <motion.div variants={reduced ? undefined : cardVariants}>
+              </m.div>
+              <m.div variants={reduced ? undefined : cardVariants}>
                 <TiltCard className="h-full rounded-card">
                   <UnitedKingdomCard />
                 </TiltCard>
-              </motion.div>
+              </m.div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

@@ -4,6 +4,7 @@ import { sampleBannerText } from '@/data/dev'
 import { isUsingSampleClients } from '@/lib/clients'
 import { isUsingSampleCourses } from '@/lib/courses'
 import { SAMPLES_ENABLED } from '@/lib/samples'
+import { isUsingSampleTrust } from '@/lib/trust'
 
 const HEIGHT = '28px'
 
@@ -15,8 +16,9 @@ export default function SampleContentBanner() {
   const using = SAMPLES_ENABLED && {
     courses: isUsingSampleCourses(),
     clients: isUsingSampleClients(),
+    trust: isUsingSampleTrust(),
   }
-  const show = Boolean(using && (using.courses || using.clients))
+  const show = Boolean(using && (using.courses || using.clients || using.trust))
 
   useLayoutEffect(() => {
     if (!show) return

@@ -1,6 +1,6 @@
 import { useId, useRef, useState } from 'react'
 import { Link } from 'react-router'
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { ArrowUp, ChevronDown, FileText, Mail, MapPin, Phone } from 'lucide-react'
 import Logo from '@/components/brand/Logo'
 import PulseLine from '@/components/brand/PulseLine'
@@ -213,7 +213,7 @@ function FooterColumn({ title, children }) {
           </button>
         )}
       </h2>
-      <motion.ul
+      <m.ul
         id={listId}
         hidden={!expanded}
         className="space-y-3 pb-6 text-[0.9375rem] lg:pb-0"
@@ -222,7 +222,7 @@ function FooterColumn({ title, children }) {
         transition={reduced || desktop ? { duration: 0 } : transition.fast}
       >
         {children}
-      </motion.ul>
+      </m.ul>
     </div>
   )
 }

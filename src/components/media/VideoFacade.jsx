@@ -29,6 +29,8 @@ export default function VideoFacade({ video, className }) {
           title={video.title}
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowFullScreen
+          // The visitor asked to play: move focus into the player once it has loaded.
+          onLoad={(event) => event.currentTarget.focus()}
           className="absolute inset-0 size-full"
         />
       ) : (

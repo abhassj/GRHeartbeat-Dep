@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'motion/react'
+import { m, useScroll, useTransform } from 'motion/react'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 
 /**
@@ -13,8 +13,8 @@ export default function Parallax({ offset = 8, className, children }) {
   const y = useTransform(scrollYProgress, [0, 1], [`-${offset}%`, `${offset}%`])
 
   return (
-    <motion.div ref={ref} className={className} style={reduced ? undefined : { y }}>
+    <m.div ref={ref} className={className} style={reduced ? undefined : { y }}>
       {children}
-    </motion.div>
+    </m.div>
   )
 }

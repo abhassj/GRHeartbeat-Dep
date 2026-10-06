@@ -23,3 +23,20 @@ export function sweepStartDelay(sweepS, atS) {
   const target = (CYCLE_MS - atS * 1000 + CYCLE_MS) % CYCLE_MS
   return ((((target - cyclePhaseMs()) % CYCLE_MS) + CYCLE_MS) % CYCLE_MS) / 1000
 }
+
+/**
+ * Line an element's 5 s CSS loops (its own and its descendants' and pseudo-elements') up
+ * with the shared cycle. --beat-delay sets the phase as the animation is created; a
+ * compositor animation only gets its start time a few frames later, which would leave it
+ * that far behind the clock, so its start time is pinned as well.
+ */
+export function syncToHeartbeat(element) {
+  if (!element) return
+  element.style.setProperty('--beat-delay', cssCycleDelay())
+  for (const animation of element.getAnimations({ subtree: true })) {
+    const { duration, delay } = animation.effect.getTiming()
+    // Active time = timeline time − start time − delay; the timeline shares
+    // performance.now()'s origin, so this start time puts the cycle at the clock's phase.
+    if (duration === CYCLE_MS && animation.playState !== 'paused') animation.startTime = -delay
+  }
+}
