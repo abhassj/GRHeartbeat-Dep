@@ -69,17 +69,21 @@ export default function Footer({ overlap = false }) {
               <Logo alt="" className="h-9 w-auto" />
             </Link>
             <p className="mt-5 max-w-xs text-[0.9375rem]">{copy.about}</p>
-            <p className="mt-6 text-xs font-bold tracking-[0.12em] text-white uppercase">
-              {copy.accreditationsHeading}
-            </p>
-            <ul className="mt-3 space-y-2 text-sm">
-              {site.accreditations.map((item) => (
-                <li key={item.id}>
-                  <span className="font-semibold text-white">{item.name}</span>
-                  <span className="block text-grey-200">{item.reference}</span>
-                </li>
-              ))}
-            </ul>
+            {site.accreditations.length > 0 && (
+              <>
+                <p className="mt-6 text-xs font-bold tracking-[0.12em] text-white uppercase">
+                  {copy.accreditationsHeading}
+                </p>
+                <ul className="mt-3 space-y-2 text-sm">
+                  {site.accreditations.map((item) => (
+                    <li key={item.id}>
+                      <span className="font-semibold text-white">{item.name}</span>
+                      <span className="block text-grey-200">{item.reference}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
 
           <FooterColumn title={copy.columns.courses}>

@@ -1,16 +1,22 @@
 import { useLayoutEffect } from 'react'
 import { FlaskConical } from 'lucide-react'
 import { sampleBannerText } from '@/data/dev'
-import { isUsingSampleCourses, SAMPLES_ENABLED } from '@/lib/courses'
+import { isUsingSampleClients } from '@/lib/clients'
+import { isUsingSampleCourses } from '@/lib/courses'
+import { SAMPLES_ENABLED } from '@/lib/samples'
 
 const HEIGHT = '28px'
 
 /**
- * Thin amber bar shown whenever sample course fixtures stand in for the real list.
+ * Thin amber bar shown whenever sample fixtures (courses, client logos) stand in for real content.
  * Never renders in production builds (samples are compiled out there).
  */
 export default function SampleContentBanner() {
-  const show = SAMPLES_ENABLED && isUsingSampleCourses()
+  const using = SAMPLES_ENABLED && {
+    courses: isUsingSampleCourses(),
+    clients: isUsingSampleClients(),
+  }
+  const show = Boolean(using && (using.courses || using.clients))
 
   useLayoutEffect(() => {
     if (!show) return
@@ -26,7 +32,7 @@ export default function SampleContentBanner() {
       style={{ height: HEIGHT }}
     >
       <FlaskConical aria-hidden size={14} />
-      {sampleBannerText}
+      {sampleBannerText(using)}
     </div>
   )
 }

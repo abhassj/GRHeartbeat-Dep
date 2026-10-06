@@ -1,4 +1,4 @@
-import { site } from '@/data/site'
+import { site, yearsOfHistory } from '@/data/site'
 
 // Copy for the layout shell: navbar, courses menu, mobile drawer, final CTA band, footer.
 
@@ -12,6 +12,7 @@ export const mainNav = [
 
 export const navCta = { label: 'Get in touch', to: '/contact' }
 
+// Pre-filled WhatsApp message. TODO(client): review wording.
 export const whatsappMessage = `Hi ${site.name}, I'd like to enquire about your training.`
 
 export const navLabels = {
@@ -50,9 +51,10 @@ export const mobileMenu = {
   contactLink: { label: 'Contact', to: '/contact' },
 }
 
+// Drafted copy. TODO(client): review the heading and text.
 export const finalCta = {
   heading: 'Training for your team?',
-  text: `Call, WhatsApp or email us and we'll plan accredited training around your people and your site.`,
+  text: `Call, WhatsApp or email us and we'll plan training around your people and your site.`,
   callLabel: 'Call us',
   whatsappLabel: 'WhatsApp',
   emailLabel: 'Email us',
@@ -60,8 +62,8 @@ export const finalCta = {
 }
 
 export const footer = {
-  // From the current site's About copy. TODO(client): confirm wording for the rebrand.
-  about: `A Durban-based health and safety training academy, training the public and corporate sectors since ${site.foundedYear}.`,
+  // Drafted copy. TODO(client): confirm wording for the rebrand.
+  about: `A Durban-based health and safety training academy with ${yearsOfHistory()}+ years of experience.`,
   logoLabel: `${site.name} home`,
   accreditationsHeading: 'Accreditations',
   columns: {

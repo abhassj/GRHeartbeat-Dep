@@ -1,6 +1,6 @@
 import logoSrc from '@/assets/brand/gr-heartbeat-logo.webp'
 
-// Brand identity. Phase 3 folds this into site.js alongside contacts and accreditations.
+// Brand identity (name, logo). Business facts live in site.js.
 export const brand = {
   name: 'GR Heartbeat',
   // As written in the logo lockup. TODO(client): confirm the registered business name.

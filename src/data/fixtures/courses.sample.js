@@ -1,6 +1,7 @@
 // Generic SAMPLE courses for building and testing the UI. Not real courses.
 // Used only in development (or with VITE_SAMPLE_CONTENT=true) while the real list is empty;
-// production builds never include this file. Phase 3 adds schema validation.
+// production builds never include this file. Every sample must pass validateCourse()
+// (npm run check:content checks them).
 
 const lorem = {
   summary:
@@ -17,7 +18,7 @@ export const sampleCourses = [
     category: 'first-aid',
     summary: lorem.summary,
     duration: '1 day',
-    deliveryMode: 'On-site or at our venue',
+    deliveryMode: 'both',
     nqfLevel: 1,
     unitStandards: ['Sample unit standard A'],
     accreditation: 'Sample accrediting body',
@@ -39,7 +40,7 @@ export const sampleCourses = [
     category: 'first-aid',
     summary: lorem.long,
     duration: '3 days',
-    deliveryMode: 'At our venue',
+    deliveryMode: 'venue',
     nqfLevel: 2,
     unitStandards: ['Sample unit standard B', 'Sample unit standard C'],
     accreditation: 'Sample accrediting body',
@@ -67,13 +68,13 @@ export const sampleCourses = [
     category: 'compliance',
     summary: lorem.summary,
     duration: '2 days',
-    deliveryMode: 'On-site at client',
+    deliveryMode: 'on-site',
     nqfLevel: null,
     unitStandards: [],
     accreditation: null,
     certificateValidity: null,
     price: null,
-    audience: ['Sample audience one'],
+    audience: ['Sample audience one', 'Sample audience two'],
     outcomes: ['Sample outcome one', 'Sample outcome two', 'Sample outcome three'],
     requirements: [],
     whatToBring: [],
@@ -88,7 +89,7 @@ export const sampleCourses = [
     category: 'compliance',
     summary: lorem.summary,
     duration: 'Half day',
-    deliveryMode: 'On-site or at our venue',
+    deliveryMode: 'both',
     nqfLevel: 3,
     unitStandards: ['Sample unit standard D'],
     accreditation: 'Sample accrediting body',
@@ -109,7 +110,7 @@ export const sampleCourses = [
     category: 'emergency-response',
     summary: lorem.summary,
     duration: '1 day',
-    deliveryMode: 'On-site at client',
+    deliveryMode: 'on-site',
     nqfLevel: 2,
     unitStandards: ['Sample unit standard E'],
     accreditation: 'Sample accrediting body',
@@ -130,13 +131,13 @@ export const sampleCourses = [
     category: 'emergency-response',
     summary: lorem.long,
     duration: '2 days',
-    deliveryMode: 'At our venue',
+    deliveryMode: 'venue',
     nqfLevel: null,
     unitStandards: [],
     accreditation: null,
     certificateValidity: 'Sample: 2 years',
     price: 'R 0 000 (sample)',
-    audience: ['Sample audience one'],
+    audience: ['Sample audience one', 'Sample audience two'],
     outcomes: [
       'Sample outcome one',
       'Sample outcome two',

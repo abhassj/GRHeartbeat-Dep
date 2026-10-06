@@ -33,6 +33,7 @@ npm run dev                  # http://localhost:5173
 | `npm run lint`         | Lint with oxlint                       |
 | `npm run format`       | Format everything with Prettier        |
 | `npm run format:check` | Check formatting (for CI)              |
+| `npm run check:content` | Validate course/video/client data and count TODO(client) markers (`-- --strict` for the launch gate) |
 
 ## Project structure
 
@@ -103,7 +104,15 @@ Course data is **not** taken from the old website. The client's new list is impo
 
 ### Adding a course
 
-Add one object to `src/data/courses.sa.js`. The `slug` becomes the URL: `/courses/sa/<slug>`. See the course data model in the PRD for every field.
+Add one object to `src/data/courses.sa.js`. The fields follow the Course import intake table and are documented in `src/data/courses.schema.js`; the `slug` becomes the URL (`/courses/sa/<slug>`). Run `npm run check:content`: it validates every course (`validateCourse()`) and exits non-zero on errors. The dev server also warns in the console, with the slug and field.
+
+### Other content
+
+- **Facts:** `src/data/site.js` holds only confirmed facts. Unconfirmed items are `null` / `[]` with `TODO(client)` and are not rendered until supplied (for example accreditations and people trained).
+- **Photos:** `src/assets/photos/` (WebP, 1200 w and 800 w), with alt text in `src/data/photos.js`. All current photos are placeholders from the old site; see `MANIFEST.md` there.
+- **Videos:** `src/data/videos.js`. A `youtubeId` of `null` shows the poster with "Video coming soon": no iframe and nothing clickable. Never invent an ID.
+- **Clients:** `src/data/clients.js` (`{ name, logo, alt, url? }`). While it is empty, production renders no clients section; development shows neutral placeholder tiles.
+- **Page copy:** `home.js`, `about.js`, `navigation.js`, `categories.js`. Drafted wording is marked `TODO(client)` for review.
 
 ### Launching the UK
 

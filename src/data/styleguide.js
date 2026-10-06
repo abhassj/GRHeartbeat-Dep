@@ -31,6 +31,17 @@ export const styleguide = {
       'WhatsApp button after 400px of scroll; hidden while the CTA band or footer is on screen.',
       'Route changes: fade out/in with one ECG sweep; focus moves to the new page heading.',
     ],
+    contentNotes: {
+      audit:
+        'What each content consumer receives in this build: samples in development, the empty state in production.',
+      video:
+        'All three videos have no YouTube ID yet: poster + "Video coming soon", no iframe and nothing clickable.',
+      clients:
+        'Development placeholders (no company names). In production an empty list hides the section.',
+      clientsLabel: 'Logo tiles (development)',
+      clientsEmpty: 'No clients in this build, so the home page renders no clients section.',
+      team: 'While the team list is empty, About shows this card instead of an empty grid.',
+    },
     stats: [
       { value: 1240, suffix: '+', label: 'Sample metric' },
       { value: 98, suffix: '%', label: 'Another metric' },

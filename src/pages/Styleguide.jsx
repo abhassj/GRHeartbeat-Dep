@@ -26,6 +26,13 @@ import Parallax from '@/components/motion/Parallax'
 import Reveal from '@/components/motion/Reveal'
 import RevealStagger, { RevealItem } from '@/components/motion/RevealStagger'
 import Marquee from '@/components/motion/Marquee'
+import TeamGrid from '@/components/about/TeamGrid'
+import ClientLogo from '@/components/media/ClientLogo'
+import VideoFacade from '@/components/media/VideoFacade'
+import ContentAudit from '@/components/styleguide/ContentAudit'
+import { about } from '@/data/about'
+import { getClients } from '@/lib/clients'
+import { getVideos } from '@/lib/videos'
 import TiltCard from '@/components/motion/TiltCard'
 import Demo from '@/components/styleguide/Demo'
 import FontCheck from '@/components/styleguide/FontCheck'
@@ -57,6 +64,7 @@ const chapters = [
   ['pulse', 'Pulse line'],
   ['motion', 'Motion'],
   ['layout', 'Layout'],
+  ['content', 'Content states'],
 ]
 
 const icons = [HeartPulse, ShieldCheck, Flame, Award, Users, CalendarCheck]
@@ -542,6 +550,35 @@ export default function Styleguide() {
                 <li key={note}>{note}</li>
               ))}
             </ul>
+          </Demo>
+        </div>
+      </SgSection>
+
+      <SgSection id="content" index={10} title="Content states">
+        <div className="space-y-6">
+          <Demo title="Content audit" note={sample.contentNotes.audit}>
+            <ContentAudit />
+          </Demo>
+          <Demo title="VideoFacade" note={sample.contentNotes.video}>
+            <div className="grid gap-4 md:grid-cols-3">
+              {getVideos().map((video) => (
+                <VideoFacade key={video.id} video={video} />
+              ))}
+            </div>
+          </Demo>
+          <Demo title="Client logos" note={sample.contentNotes.clients}>
+            {getClients().length ? (
+              <Marquee duration={40} label={sample.contentNotes.clientsLabel}>
+                {getClients().map((client) => (
+                  <ClientLogo key={client.id ?? client.name} client={client} />
+                ))}
+              </Marquee>
+            ) : (
+              <p className="text-sm text-grey-600">{sample.contentNotes.clientsEmpty}</p>
+            )}
+          </Demo>
+          <Demo title="Team (empty state)" note={sample.contentNotes.team}>
+            <TeamGrid team={about.team} />
           </Demo>
         </div>
       </SgSection>

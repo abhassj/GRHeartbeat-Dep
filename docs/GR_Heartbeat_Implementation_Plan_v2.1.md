@@ -377,6 +377,7 @@ This is a standalone step. It can run any time after Phase 3 (ideally after Phas
 - [ ] Enable Vercel Web Analytics
 - [ ] **Launch gate:** the Course import step is done (real courses in `courses.sa.js`). If the client wants to launch before the list arrives, get written confirmation that the "course list is being updated" state is acceptable
 - [ ] **Launch gate:** A real POPIA privacy notice replaces the placeholder before launch.
+- [ ] **Launch gate:** `npm run check:content -- --strict` passes: every course file validates, the SA course list is not empty, and no TODO(client) markers remain.
 - [ ] Client review on the Vercel URL → written sign-off
 - [ ] Custom domain + DNS, verify HTTPS, submit the sitemap to Google Search Console
 - [ ] Handover README: adding and editing courses (with the intake table and `validateCourse()`), turning on the UK, replacing videos and logos
