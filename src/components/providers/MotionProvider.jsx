@@ -57,9 +57,10 @@ export default function MotionProvider({ children }) {
     }
   }, [])
 
+  const layoutReady = features !== initialMotionFeatures
   const value = useMemo(
-    () => ({ reduced, system, override, setOverride, paused, setPaused }),
-    [reduced, system, override, paused, setPaused],
+    () => ({ reduced, system, override, setOverride, paused, setPaused, layoutReady }),
+    [reduced, system, override, paused, setPaused, layoutReady],
   )
 
   return (

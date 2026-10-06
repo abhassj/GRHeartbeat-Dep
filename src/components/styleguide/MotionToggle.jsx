@@ -11,7 +11,7 @@ const options = [
 
 /** Floating switch that overrides prefers-reduced-motion for the whole app (preview only). */
 export default function MotionToggle() {
-  const { override, setOverride, system, reduced } = useMotionPreference()
+  const { override, setOverride, system, reduced, layoutReady } = useMotionPreference()
 
   return (
     <div className="fixed bottom-4 left-4 z-40 rounded-full border border-line bg-white/90 p-1.5 shadow-card-hover backdrop-blur-md sm:left-1/2 sm:-translate-x-1/2">
@@ -38,6 +38,7 @@ export default function MotionToggle() {
             >
               {active && (
                 <m.span
+                  key={String(layoutReady)}
                   layoutId="motion-toggle-indicator"
                   className="absolute inset-0 rounded-full bg-ink"
                   transition={transition.morph}

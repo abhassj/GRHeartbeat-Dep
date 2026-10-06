@@ -17,6 +17,15 @@ export function useMotionPaused() {
   return Boolean(use(MotionPreferenceContext)?.paused)
 }
 
+/**
+ * True once layout animation (layoutId) is available: it arrives after the page has loaded
+ * (lib/motion-features.js). An element with a layoutId that mounted before then cannot
+ * animate its first move, so key it on `String(layoutReady)` to remount it once, in place.
+ */
+export function useLayoutReady() {
+  return Boolean(use(MotionPreferenceContext)?.layoutReady)
+}
+
 /** Read and change the override ('reduce' | 'full' | null for "follow the system"). */
 export function useMotionPreference() {
   return use(MotionPreferenceContext)

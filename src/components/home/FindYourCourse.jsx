@@ -16,7 +16,7 @@ import Heading from '@/components/ui/Heading'
 import IconRing from '@/components/ui/IconRing'
 import Section from '@/components/ui/Section'
 import { home } from '@/data/home'
-import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
+import { useLayoutReady, useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { telHref, whatsappHref } from '@/lib/contact'
 import { getFindYourCourse } from '@/lib/courses'
 import { cx } from '@/lib/cx'
@@ -29,6 +29,7 @@ const REGIONS = ['sa', 'uk']
 function RegionTabs({ active, onChange, ids }) {
   const copy = home.findCourse
   const tabs = useRef([])
+  const layoutReady = useLayoutReady()
 
   const onKeyDown = (event) => {
     const index = REGIONS.indexOf(active)
@@ -71,6 +72,7 @@ function RegionTabs({ active, onChange, ids }) {
           >
             {selected && (
               <m.span
+                key={String(layoutReady)}
                 layoutId="region-tab-indicator"
                 aria-hidden
                 className="absolute inset-0 rounded-full bg-pulse-red"
