@@ -1,4 +1,5 @@
 import { about } from '@/data/about'
+import { motionControl } from '@/data/navigation'
 import { site, yearsOfHistory } from '@/data/site'
 
 /*
@@ -8,9 +9,15 @@ import { site, yearsOfHistory } from '@/data/site'
  * from lib/courses.js; photos are ids from data/photos.js.
  */
 
-const stat = (key, value, label) => (value == null ? null : { key, value, suffix: '+', label })
+const stat = (key, value, label, icon) =>
+  value == null ? null : { key, value, suffix: '+', label, icon }
 
 export const home = {
+  meta: {
+    title: `${site.name} | First aid, health and safety training in ${site.location.city}`,
+    description: `First aid, health and safety, and emergency response training in ${site.location.city}, ${site.location.country}.`,
+  },
+
   // 4.1 Hero
   hero: {
     eyebrow: `${site.location.city} · ${yearsOfHistory()}+ years of training`,
@@ -26,12 +33,27 @@ export const home = {
       'For teams and individuals',
       `Based in ${site.location.city}`,
     ],
-    // Shown until the hero video exists (and always under reduced motion / save-data).
-    poster: 'cprCompressions',
-    // TODO: AI-generated hero loop (≤ 3 MB) in /public/media/hero/; client to review.
-    video: { mp4: null, webm: null },
-    videoLabels: { pause: 'Pause background video', play: 'Play background video' },
+    // One control pauses the video and every decorative loop (WCAG 2.2.2).
+    motionLabels: motionControl,
     scrollCue: 'Scroll to explore',
+  },
+
+  // Hero video. Decorative (muted, no audio track); the poster is the LCP image.
+  // AI-generated; TODO(client): review the CPR technique shown before launch (the instructor's
+  // shoulders are not directly over her hands). Encoded from docs/media-src (not committed):
+  // an 8.4 s seamless-as-possible loop, 1280×720, audio stripped.
+  // If sources is empty, the poster (or fallbackPhoto) shows with a slow zoom instead.
+  heroVideo: {
+    sources: [
+      { src: '/media/hero/hero.webm', type: 'video/webm' },
+      { src: '/media/hero/hero.mp4', type: 'video/mp4' },
+    ],
+    poster: { src: '/media/hero/hero-poster.webp', width: 1280, height: 720 },
+    fallbackPhoto: 'cprCompressions',
+    // Keeps the instructor, her hands and the manikin in frame at each crop.
+    objectPosition: { desktop: '25% 50%', mobile: '40% 50%' },
+    // The loop seam (a small head turn) is hidden with a crossfade in the player.
+    loopCrossfadeMs: 300,
   },
 
   // 4.2 Trust strip — the accreditation badges render only once site.accreditations is confirmed.
@@ -50,9 +72,9 @@ export const home = {
     photos: { tall: 'cprClass', wide: null, square: 'cprCompressions' },
     // Only figures the client has given. peopleTrained appears once supplied in site.js.
     stats: [
-      stat('courses', site.stats.courses, 'Courses'),
-      stat('years', yearsOfHistory(), 'Years of experience'),
-      stat('people', site.stats.peopleTrained, 'People trained'),
+      stat('courses', site.stats.courses, 'Courses', 'BookOpen'),
+      stat('years', yearsOfHistory(), 'Years of experience', 'CalendarCheck'),
+      stat('people', site.stats.peopleTrained, 'People trained', 'Users'),
     ].filter(Boolean),
     moreLink: { label: 'More about us', to: '/about' },
   },
@@ -60,7 +82,7 @@ export const home = {
   // 4.4 What we do (pillars = categories, via getPillars())
   whatWeDo: {
     eyebrow: 'What we do',
-    heading: { lead: 'Three areas of', accent: 'training' },
+    heading: { lead: 'Areas of', accent: 'training' },
     chipsLabel: 'Courses include',
     seeCourses: 'See courses',
   },

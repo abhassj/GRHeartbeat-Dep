@@ -159,7 +159,52 @@
     opacity: 0;
     pointer-events: none;
     animation: lub-dub 5s ease-out infinite;
+    /* Aligns the glow with the shared heartbeat clock (src/lib/heartbeat.js) */
+    animation-delay: var(--beat-delay, 0s);
   }
+}
+
+/* Slow zoom on the hero poster while there is no video */
+@keyframes ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@utility animate-ken-burns {
+  animation: ken-burns 24s ease-in-out infinite alternate;
+}
+
+/* Scroll-cue blip: one flash per heartbeat (5 s cycle, aligned like the glow) */
+@keyframes cue-beat {
+  0% {
+    opacity: 0.25;
+    transform: scale(0.9);
+  }
+  6% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  14%,
+  100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+}
+
+@utility animate-cue-beat {
+  animation: cue-beat 5s ease-out infinite;
+  animation-delay: var(--beat-delay, 0s);
+}
+
+/* Visitor pressed a pause control: every CSS loop holds still (WCAG 2.2.2) */
+:root[data-motion-paused] *,
+:root[data-motion-paused] *::before,
+:root[data-motion-paused] *::after {
+  animation-play-state: paused !important;
 }
 
 /* Chrome text for stat numbers */

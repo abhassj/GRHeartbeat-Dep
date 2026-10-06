@@ -1,9 +1,11 @@
-import { useId, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { motion, useInView } from 'motion/react'
 import { useElementSize } from '@/hooks/useElementSize'
-import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
+import { useRegisterLoop } from '@/hooks/useLoops'
+import { useMotionPaused, useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { cx } from '@/lib/cx'
 import { beatPositions, buildTrace } from '@/lib/ecg'
+import { HEARTBEAT_S, sweepStartDelay } from '@/lib/heartbeat'
 import { beatSeconds, ease, revealMargin } from '@/lib/motion'
 
 const BLIP_CORE_PX = 22
@@ -25,6 +27,9 @@ const BLIP_GLOW_PX = 72
  * - baseline: 'center' | 'start' | 'end' (edge traces run along one side of the box)
  * - color, blipColor, strokeWidth, glow
  * - bpm: blip speed in beats per minute (one sweep per beat)
+ * - sync: beat on the shared 5 s heartbeat clock instead (lib/heartbeat.js): the blip crosses
+ *   the first spike exactly when the HeartbeatButton glows; sweep (s) sets its travel time
+ * Loops register for the pause control and stop while the visitor has paused motion.
  * - loop: keep beating (false = one blip after drawing); blip: show the blip at all
  * - draw: 'mount' | 'view' (when scrolled into view) | 'none' (start fully drawn)
  * - drawDuration, delay (s), vertical (trace runs top → bottom)
@@ -46,10 +51,13 @@ export default function PulseLine({
   drawDuration = 1.6,
   delay = 0,
   vertical = false,
+  sync = false,
+  sweep,
   className,
   style,
 }) {
   const reduced = useReducedMotionSafe()
+  const paused = useMotionPaused()
   const ref = useRef(null)
   const { width, height } = useElementSize(ref)
   const inView = useInView(ref, { amount: 0 })
@@ -81,8 +89,21 @@ export default function PulseLine({
   }, [length, thickness, strokeWidth, baseline, beats, beatWidth, amplitude, shape, vertical])
 
   const startDraw = draw === 'mount' || (draw === 'view' && seen)
-  const showBlip = blip && !reduced && drawn && inView && trace
-  const period = beatSeconds(bpm)
+
+  // The blip starts once the line has drawn in. A timer over the known draw time is used
+  // rather than onAnimationComplete, which does not fire reliably for this path animation.
+  useEffect(() => {
+    if (drawn || !startDraw || !trace) return
+    const timer = setTimeout(() => setDrawn(true), (delay + drawDuration) * 1000 + 50)
+    return () => clearTimeout(timer)
+  }, [drawn, startDraw, trace, delay, drawDuration])
+
+  const looping = blip && loop && !reduced && drawn
+  useRegisterLoop(ref, looping)
+  const showBlip = blip && !reduced && !paused && drawn && inView && trace
+  const period = sync ? HEARTBEAT_S : beatSeconds(bpm)
+  const travel = Math.min(sweep ?? period * 0.92, period)
+  const spikeAt = sync ? (beatPositions(beats)[0] ?? 0.5) : null
 
   const stroke = {
     fill: 'none',
@@ -123,7 +144,6 @@ export default function PulseLine({
                 pathLength: { duration: drawDuration, ease: ease.inOut, delay },
                 opacity: { duration: 0.1, delay },
               }}
-              onAnimationComplete={() => setDrawn(true)}
             />
           )}
 
@@ -135,6 +155,8 @@ export default function PulseLine({
               strokeWidth={strokeWidth}
               filterId={glow ? filterId : null}
               period={period}
+              travel={travel}
+              spikeAt={spikeAt}
               loop={loop}
               stroke={stroke}
             />
@@ -145,22 +167,42 @@ export default function PulseLine({
   )
 }
 
-function Blip({ trace, color, blipColor, strokeWidth, filterId, period, loop, stroke }) {
+function Blip({
+  trace,
+  color,
+  blipColor,
+  strokeWidth,
+  filterId,
+  period,
+  travel,
+  spikeAt,
+  loop,
+  stroke,
+}) {
   const core = Math.min(BLIP_CORE_PX / trace.length, 0.25)
   const halo = Math.min(BLIP_GLOW_PX / trace.length, 0.4)
-  // Both segments share one leading edge (the head travels 0 → 1 + halo), so the glow
-  // trails behind the bright core like a comet and fully exits before the next beat.
-  // It rests just off each end (EDGE) with a wide dash gap, so no zero-length dash
-  // leaves a round-cap dot on the line between sweeps.
+  // Synced blips wait until their spike crossing lands on the heartbeat (cycle phase 0).
+  // The head covers 1 + halo of the path per sweep, so it reaches `spikeAt` at that share.
+  const [startDelay] = useState(() =>
+    spikeAt == null ? 0 : sweepStartDelay(travel, (travel * spikeAt) / (1 + halo)),
+  )
+  // Both segments share one leading edge (the head travels 0 → 1 + halo of the path), so the
+  // glow trails behind the bright core like a comet and fully exits before the next beat.
+  // Dashes are in px (the trace length is known exactly) and only stroke-dashoffset animates.
+  // A dash gap of 3 path lengths means no second dash ever wraps into view, and resting just
+  // off each end (EDGE) means no zero-length dash leaves a round-cap dot between sweeps.
+  const L = trace.length
   const EDGE = 0.01
-  const sweep = (len) => ({
-    initial: { pathLength: len, pathSpacing: 3, pathOffset: -len - EDGE },
-    animate: { pathOffset: 1 + halo - len + EDGE },
+  const sweep = (len, style) => ({
+    style: { ...stroke, ...style, strokeDasharray: `${len * L} ${3 * L}` },
+    initial: { strokeDashoffset: (len + EDGE) * L },
+    animate: { strokeDashoffset: -(1 + halo - len + EDGE) * L },
     transition: {
-      duration: period * 0.92,
+      duration: travel,
       ease: 'linear',
+      delay: startDelay,
       repeat: loop ? Infinity : 0,
-      repeatDelay: period * 0.08,
+      repeatDelay: period - travel,
     },
   })
 
@@ -170,14 +212,12 @@ function Blip({ trace, color, blipColor, strokeWidth, filterId, period, loop, st
         <motion.path
           d={trace.d}
           filter={`url(#${filterId})`}
-          style={{ ...stroke, stroke: color, strokeWidth: strokeWidth * 4, opacity: 0.7 }}
-          {...sweep(halo)}
+          {...sweep(halo, { stroke: color, strokeWidth: strokeWidth * 4, opacity: 0.7 })}
         />
       )}
       <motion.path
         d={trace.d}
-        style={{ ...stroke, stroke: blipColor, strokeWidth: strokeWidth * 1.6 }}
-        {...sweep(core)}
+        {...sweep(core, { stroke: blipColor, strokeWidth: strokeWidth * 1.6 })}
       />
     </g>
   )

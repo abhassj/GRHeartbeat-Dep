@@ -1,6 +1,7 @@
 import { useMatches } from 'react-router'
 import SampleContentBanner from '@/components/dev/SampleContentBanner'
 import FinalCta from '@/components/layout/FinalCta'
+import FloatingMotionControl from '@/components/layout/FloatingMotionControl'
 import Footer from '@/components/layout/Footer'
 import Navbar from '@/components/layout/Navbar'
 import PageTransition from '@/components/layout/PageTransition'
@@ -34,6 +35,7 @@ export default function RootLayout() {
       </div>
 
       <WhatsAppFab />
+      <FloatingMotionControl />
     </SmoothScroll>
   )
 }

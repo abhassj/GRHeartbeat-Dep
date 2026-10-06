@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useLocation, useNavigationType, useOutlet } from 'react-router'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, motion, PresenceContext } from 'motion/react'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { useSmoothScroll } from '@/hooks/useSmoothScroll'
 import { focusElement, focusPageStart } from '@/lib/focus'
@@ -43,7 +43,12 @@ export default function PageTransition() {
           exit={{ opacity: 0, transition: { duration: reduced ? 0 : EXIT, ease: ease.out } }}
         >
           <RouteEntry />
-          <FrozenOutlet outlet={outlet} />
+          {/* Pages get a fresh presence context: AnimatePresence initial={false} only means
+              "no fade on first load" and must not stop the page's own mount animations
+              (otherwise every animate-on-mount inside the first page snaps to its end). */}
+          <PresenceContext value={null}>
+            <FrozenOutlet outlet={outlet} />
+          </PresenceContext>
         </motion.div>
       </AnimatePresence>
     </>

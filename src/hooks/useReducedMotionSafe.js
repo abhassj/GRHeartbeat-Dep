@@ -12,6 +12,11 @@ export function useReducedMotionSafe() {
   return preference ? preference.reduced : Boolean(system)
 }
 
+/** True when the visitor has paused decorative loops (WCAG 2.2.2). */
+export function useMotionPaused() {
+  return Boolean(use(MotionPreferenceContext)?.paused)
+}
+
 /** Read and change the override ('reduce' | 'full' | null for "follow the system"). */
 export function useMotionPreference() {
   return use(MotionPreferenceContext)

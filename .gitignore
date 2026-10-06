@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Raw media sources and local review screenshots (never committed or shipped)
+docs/media-src/
+docs/screenshots/

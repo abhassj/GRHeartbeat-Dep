@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { useInView } from 'motion/react'
+import { useRegisterLoop } from '@/hooks/useLoops'
 import { useReducedMotionSafe } from '@/hooks/useReducedMotionSafe'
 import { cx } from '@/lib/cx'
 
@@ -7,7 +8,8 @@ import { cx } from '@/lib/cx'
  * Infinite horizontal loop (CSS transform). The children are rendered twice; the copy is
  * hidden from assistive tech and focus. Pauses on hover, on keyboard focus and while
  * off-screen. `duration` is seconds per loop; `reverse` runs it left-to-right.
- * Under reduced motion it renders the items once as a static, wrapped row.
+ * Under reduced motion it renders the items once as a static, wrapped row. It registers as a
+ * decorative loop (so a pause control is reachable) and holds still while motion is paused.
  */
 export default function Marquee({
   duration = 40,
@@ -20,6 +22,7 @@ export default function Marquee({
   const reduced = useReducedMotionSafe()
   const ref = useRef(null)
   const inView = useInView(ref, { amount: 0 })
+  useRegisterLoop(ref, !reduced)
 
   if (reduced) {
     return (

@@ -566,7 +566,7 @@ export default function Styleguide() {
               ))}
             </div>
           </Demo>
-          <Demo title="Client logos" note={sample.contentNotes.clients}>
+          <Demo title="Clients (logo tiles)" note={sample.contentNotes.clients}>
             {getClients().length ? (
               <Marquee duration={40} label={sample.contentNotes.clientsLabel}>
                 {getClients().map((client) => (

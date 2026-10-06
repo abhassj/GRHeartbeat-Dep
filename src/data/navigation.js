@@ -92,6 +92,12 @@ export const whatsappFab = {
   message: whatsappMessage,
 }
 
+// One control pauses every decorative loop and background video (WCAG 2.2.2).
+export const motionControl = {
+  pause: 'Pause animations',
+  play: 'Play animations',
+}
+
 export const pageTitles = {
   suffix: ` | ${site.name}`,
 }

@@ -28,11 +28,11 @@ export default function SampleContentBanner() {
   return (
     <div
       role="note"
-      className="fixed inset-x-0 top-0 z-[60] flex items-center justify-center gap-2 border-b border-amber/20 bg-amber-50 px-4 text-xs font-semibold text-amber"
+      className="fixed inset-x-0 top-0 z-[60] flex items-center justify-center gap-2 overflow-hidden border-b border-amber/20 bg-amber-50 px-4 text-xs font-semibold text-amber"
       style={{ height: HEIGHT }}
     >
-      <FlaskConical aria-hidden size={14} />
-      {sampleBannerText(using)}
+      <FlaskConical aria-hidden size={14} className="shrink-0" />
+      <span className="min-w-0 truncate">{sampleBannerText(using)}</span>
     </div>
   )
 }
